@@ -46,3 +46,62 @@ e-book 회원 전문 온라인 서점(배달 사절)
 6.결제관리
     -결제하기(책갈피페이,책갈피 포인트)
         -결제한 정보 조회하기
+
+erDiagram
+    direction LR
+
+    USER {
+        INT     id             PK "고객ID"
+        VARCHAR name           "성명"
+        DATETIME joined_at     "가입일"
+        VARCHAR email          "이메일"
+        VARCHAR password       "비밀번호"
+        BOOLEAN is_admin       "관리자여부"
+        INT     points         "포인트"
+    }
+    BOOK {
+        INT     id             PK "상품번호"
+        VARCHAR title          "상품명"
+        VARCHAR category       "카테고리"
+        DECIMAL price          "판매가"
+        TEXT    description    "상품소개"
+        VARCHAR author         "작가정보"
+        INT     stock          "재고수량"
+        INT     sales_count    "판매량"
+    }
+    ORDER {
+        INT     id             PK "주문ID"
+        INT     user_id        FK "고객ID"
+        DATETIME order_date    "주문일시"
+        VARCHAR status         "CART/PLACED"
+        VARCHAR payment_method "결제수단"
+        DECIMAL total_amount   "결제금액"
+        INT     points_used    "사용포인트"
+    }
+    ORDER_ITEM {
+        INT     id             PK "주문항목ID"
+        INT     order_id       FK "주문ID"
+        INT     book_id        FK "상품번호"
+        INT     quantity       "수량"
+    }
+    REVIEW {
+        INT     id             PK "리뷰ID"
+        INT     user_id        FK "고객ID"
+        INT     book_id        FK "상품번호"
+        TINYINT rating         "별점(1~5)"
+        TEXT    content        "리뷰내용"
+        DATETIME created_at    "작성일시"
+    }
+    FAQ {
+        INT     id             PK "게시글ID"
+        VARCHAR title          "제목"
+        TEXT    content        "내용"
+        DATETIME created_at    "등록일시"
+    }
+
+    USER        --o{  ORDER        : "places"
+    ORDER       --|{  ORDER_ITEM   : "contains"
+    BOOK        --o{  ORDER_ITEM   : "included in"
+    USER        --o{  REVIEW       : "writes"
+    BOOK        --o{  REVIEW       : "has"
+    USER        --o{  FAQ          : "posts"
