@@ -1,13 +1,17 @@
 package ebook.model;
 
 import java.sql.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// DAO: UserDTO <-> DB 테이블 연동
+/**
+ * UserDTOImpl
+ * - user 테이블(DB)과 연동되는 DAO 클래스
+ * - 회원가입/로그인/정보수정/탈퇴/목록 등 기능 구현
+ */
 public class UserDTOImpl {
-    // DB 연결 메서드(실무에선 별도 DBUtil 클래스에서 관리)
+    // DB 연결 메서드
     private Connection getConnection() throws SQLException {
         String url = "jdbc:mysql://localhost:3306/ebookdb?serverTimezone=UTC";
         String user = "ebook";
@@ -15,103 +19,101 @@ public class UserDTOImpl {
         return DriverManager.getConnection(url, user, pw);
     }
 
-    /** 1. 회원가입 */
+    //1. 회원가입 (INSERT)
     public boolean insert(UserDTO user) {
-        String checkSql = "SELECT COUNT(*) FROM user WHERE id=?";
-        String insertSql = "INSERT INTO user(id, password, name, email, join_date, pay, point, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO user(user_id, password, name, email, joined_at, is_admin, pay_balance, points_balance) "
+                   + "VALUES (?, ?, ?, ?, NOW(), ?, 0, 0)";
         try (Connection conn = getConnection();
-             PreparedStatement psCheck = conn.prepareStatement(checkSql);
-             PreparedStatement psInsert = conn.prepareStatement(insertSql)) {
-
-            // 중복 ID 검사
-            psCheck.setString(1, user.getId());
-            ResultSet rs = psCheck.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                return false; // 이미 존재하는 ID
-            }
-
-            // 신규 회원 저장
-            psInsert.setString(1, user.getId());
-            psInsert.setString(2, user.getPassword());
-            psInsert.setString(3, user.getName());
-            psInsert.setString(4, user.getEmail());
-            psInsert.setDate(5, Date.valueOf(user.getJoinDate()));
-            psInsert.setInt(6, user.getPay());
-            psInsert.setInt(7, user.getPoint());
-            psInsert.setBoolean(8, user.isAdmin());
-
-            int result = psInsert.executeUpdate();
-            return result == 1;
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user.getUserId());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getName());
+            ps.setString(4, user.getEmail());
+            ps.setBoolean(5, user.isAdmin());
+            // pay_balance, points_balance는 0으로 자동 입력
+            return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    /** 2. 로그인 (ID, PW로 회원정보 반환) */
-    public UserDTO Login(String id, String pw) {
-        String sql = "SELECT * FROM user WHERE id=? AND password=?";
+    // 2. 로그인 (user_id, password로 조회)
+    public UserDTO login(String userId, String password) {
+        String sql = "SELECT * FROM user WHERE user_id=? AND password=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, id);
-            ps.setString(2, pw);
-
+            ps.setString(1, userId);
+            ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                // DB에서 조회된 값으로 UserDTO 객체 생성
+                Timestamp ts = rs.getTimestamp("joined_at");
+                LocalDateTime joinedAt = ts != null ? ts.toLocalDateTime() : null;
                 return new UserDTO(
-                        rs.getString("id"),
+                        rs.getInt("id"),
+                        rs.getString("user_id"),
                         rs.getString("password"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getDate("join_date").toLocalDate(),
-                        rs.getInt("pay"),
-                        rs.getInt("point"),
-                        rs.getBoolean("is_admin")
+                        joinedAt,
+                        rs.getBoolean("is_admin"),
+                        rs.getInt("pay_balance"),
+                        rs.getInt("points_balance")
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // 로그인 실패
+        return null;
     }
 
-    /** 3. 회원정보 수정 */
+    //3. 회원 정보 수정 (이메일/비번/페이/포인트)
     public boolean update(UserDTO user) {
-        String sql = "UPDATE user SET password=?, email=?, pay=?, point=? WHERE id=?";
+        String sql = "UPDATE user SET password=?, email=?, pay_balance=?, points_balance=? WHERE id=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, user.getPassword());
             ps.setString(2, user.getEmail());
-            ps.setInt(3, user.getPay());
-            ps.setInt(4, user.getPoint());
-            ps.setString(5, user.getId());
-
-            int result = ps.executeUpdate();
-            return result == 1;
+            ps.setInt(3, user.getPayBalance());
+            ps.setInt(4, user.getPointsBalance());
+            ps.setInt(5, user.getId());
+            return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    /** 4. 회원탈퇴(삭제) */
-    public boolean delete(String id) {
+    //4. 회원탈퇴 (id로 삭제)
+    public boolean delete(int id) {
         String sql = "DELETE FROM user WHERE id=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, id);
-            int result = ps.executeUpdate();
-            return result == 1;
+            ps.setInt(1, id);
+            return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    /** 5. 전체 회원 목록 조회 (관리자용) */
+    // 5. user_id 중복체크 (회원가입시)
+    public boolean isUserIdDuplicate(String userId) {
+        String sql = "SELECT COUNT(*) FROM user WHERE user_id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //6. 전체 회원 목록 (관리자용)
     public List<UserDTO> getAllUsers() {
         List<UserDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM user";
@@ -119,20 +121,49 @@ public class UserDTOImpl {
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                Timestamp ts = rs.getTimestamp("joined_at");
+                LocalDateTime joinedAt = ts != null ? ts.toLocalDateTime() : null;
                 list.add(new UserDTO(
-                        rs.getString("id"),
+                        rs.getInt("id"),
+                        rs.getString("user_id"),
                         rs.getString("password"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getDate("join_date").toLocalDate(),
-                        rs.getInt("pay"),
-                        rs.getInt("point"),
-                        rs.getBoolean("is_admin")
+                        joinedAt,
+                        rs.getBoolean("is_admin"),
+                        rs.getInt("pay_balance"),
+                        rs.getInt("points_balance")
                 ));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
+    }
+
+    // 7. pay/points 증감(충전)
+    public boolean updatePayBalance(int id, int amount) {
+        String sql = "UPDATE user SET pay_balance = pay_balance + ? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, amount);
+            ps.setInt(2, id);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean updatePointsBalance(int id, int amount) {
+        String sql = "UPDATE user SET points_balance = points_balance + ? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, amount);
+            ps.setInt(2, id);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
