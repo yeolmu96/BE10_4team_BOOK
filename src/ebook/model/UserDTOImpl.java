@@ -1,153 +1,169 @@
 package ebook.model;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
-//CustomerÅ×ÀÌºíÀ» ¿¢¼¼½ºÇÏ´Â ¸ğµç ±â´ÉÀ» ±¸Çö
+/**
+ * UserDTOImpl
+ * - user í…Œì´ë¸”(DB)ê³¼ ì—°ë™ë˜ëŠ” DAO í´ë˜ìŠ¤
+ * - íšŒì›ê°€ì…/ë¡œê·¸ì¸/ì •ë³´ìˆ˜ì •/íƒˆí‡´/ëª©ë¡ ë“± ê¸°ëŠ¥ êµ¬í˜„
+ */
 public class UserDTOImpl {
-	// È¸¿øµî·Ï
-	public int insert(UserDTO user) {
-		String sql = "insert into ebook_store values(?,?,?,?,sysdate())";
-		Connection con = null;
-		PreparedStatement ptmt = null;
-		int result = 0;
-		try {
-			con = DBUtil.getConnection();
-			System.out.println("¿¬°á¼º°ø" + con);
-			ptmt = con.prepareStatement(sql);
-			System.out.println("Statement°´Ã¼»ı¼º=>" + ptmt);
-			ptmt.setString(1, user.getId());
-//			ptmt.setString(2, user.getPass());
-//			ptmt.setString(3, user.getName());
-//			ptmt.setString(4, user.getAddr());
-			result = ptmt.executeUpdate();
-			System.out.println(result + "°³ Çà »ğÀÔ¼º°ø");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DBUtil.close(null, ptmt, con);
-		}
-		return result;
-	}
+    // DB ì—°ê²° ë©”ì„œë“œ
+    private Connection getConnection() throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/ebookdb?serverTimezone=UTC";
+        String user = "ebook";
+        String pw = "ebook";
+        return DriverManager.getConnection(url, user, pw);
+    }
 
-	// ·Î±×ÀÎ¸Ş¼Òµå
-	//pk·Î ºñ±³ÇÑ °æ¿ì¿¡´Â ¹«Á¶°Ç Á¶È¸µÈ ·¹ÄÚµå´Â 1°³ - ·¹ÄÚµå 1°³¸¸ ¸®ÅÏµÇ¹Ç·Î DTO·Î º¯È¯ÇØ¼­ ¸®ÅÏÇÏ´Â°ÍÀÌ ÀÏ¹İÀû
-	public UserDTO Login(String id, String pass) {
-		String sql = "select * from customer where id=? and pass=?";
-		UserDTO user =null;
-		try (Connection con = DBUtil.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-			pstmt.setString(1, id);
-			pstmt.setString(2, pass);
-			//pk·Î ºñ±³½Ã ¸®ÅÏ°ªÀº ¹«Á¶°Ç ÇÑ°³¹Û¿¡ ¾ø´Ù °í·Î ifÃ³¸®
-//			try (ResultSet rs = pstmt.executeQuery();) {
-//				if(rs.next()) {
-//					user= new UserDTO(rs.getString(1), rs.getString(2), rs.getString(3),
-//							rs.getString(4), rs.getDate(5));
-//				}
-//			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			return user;
-		}
+    //1. íšŒì›ê°€ì… (INSERT)
+    public boolean insert(UserDTO user) {
+        String sql = "INSERT INTO user(user_id, password, name, email, joined_at, is_admin, pay_balance, points_balance) "
+                   + "VALUES (?, ?, ?, ?, NOW(), ?, 0, 0)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user.getUserId());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getName());
+            ps.setString(4, user.getEmail());
+            ps.setBoolean(5, user.isAdmin());
+            // pay_balance, points_balanceëŠ” 0ìœ¼ë¡œ ìë™ ì…ë ¥
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	}
+    // 2. ë¡œê·¸ì¸ (user_id, passwordë¡œ ì¡°íšŒ)
+    public UserDTO login(String userId, String password) {
+        String sql = "SELECT * FROM user WHERE user_id=? AND password=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Timestamp ts = rs.getTimestamp("joined_at");
+                LocalDateTime joinedAt = ts != null ? ts.toLocalDateTime() : null;
+                return new UserDTO(
+                        rs.getInt("id"),
+                        rs.getString("user_id"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        joinedAt,
+                        rs.getBoolean("is_admin"),
+                        rs.getInt("pay_balance"),
+                        rs.getInt("points_balance")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-	public String Update(String id, String addr) {
-		String sql = "update customer set addr=? where id=?";
-		String result = null;
-		try (Connection con = DBUtil.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-			pstmt.setString(1, addr);
-			pstmt.setString(2, id);
-			int rs = pstmt.executeUpdate();
-			// 5.½ÇÇà°á°ú Ã³¸®
-			if (rs > 0) {
-				result = rs + "°³ update ¼º°ø";
-			} else {
-				result = rs + "°³ update ½ÇÆĞ";
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			return result;
-		}
-		// ½Ç¹«¿¡¼­´Â ¹Ì¸®Ä¿³Ø¼ÇÀ» ¸¸µé¾î³õ°í ¿äÃ»ÀÌ µé¾î¿À¸é ÃÄ³»´ÂÇü½Ä
-	}
+    //3. íšŒì› ì •ë³´ ìˆ˜ì • (ì´ë©”ì¼/ë¹„ë²ˆ/í˜ì´/í¬ì¸íŠ¸)
+    public boolean update(UserDTO user) {
+        String sql = "UPDATE user SET password=?, email=?, pay_balance=?, points_balance=? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user.getPassword());
+            ps.setString(2, user.getEmail());
+            ps.setInt(3, user.getPayBalance());
+            ps.setInt(4, user.getPointsBalance());
+            ps.setInt(5, user.getId());
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	// È¸¿øÅ»Åğ
-	public int delete(String id) {
-		String sql = "delete from customer where id=? ";
-		int result = 0;
-		try (// 2.DBMS¿¡ Á¢¼Ó
-				Connection con = DBUtil.getConnection();
-				// 3. SQL¹®À» ½ÇÇàÇÏ±â À§ÇÑ °´Ã¼¸¦ »ı¼º
-				PreparedStatement ptmt = con.prepareStatement(sql);) {
-			ptmt.setString(1, id);
-			// 4. SQL¹® ½ÇÇà
-			int rs = ptmt.executeUpdate();
-			// 5.½ÇÇà°á°ú Ã³¸®
-			result = rs;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			return result;
-		}
-	}
+    //4. íšŒì›íƒˆí‡´ (idë¡œ ì‚­ì œ)
+    public boolean delete(int id) {
+        String sql = "DELETE FROM user WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	// È¸¿ø ÀüÃ¼¸ñ·Ï Á¶È¸
-	public ArrayList<UserDTO> findByArr(String addr) {
-		String sql = "select * from customer where addr=?";
-		// Á¶È¸µÈ Customer Å×ÀÌºíÀÇ ¸ğµç µ¥ÀÌÅÍ¸¦ ´ã¾Æ¼­ ¸®ÅÏÇÒ ÀÚ·á±¸Á¶
-		ArrayList<UserDTO> customerlist = new ArrayList<UserDTO>();
-		try (Connection con = DBUtil.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
-			pstmt.setString(1, addr);
-			ResultSet rs = pstmt.executeQuery();
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int columnCount = rsmd.getColumnCount();
-//			while (rs.next()) {
-//				UserDTO customer = new UserDTO(rs.getString(1), rs.getString(2), rs.getString(3),
-//						rs.getString(4), rs.getDate(5));
-//				customerlist.add(customer);
-//			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			return customerlist;
-		}
-	}
+    // 5. user_id ì¤‘ë³µì²´í¬ (íšŒì›ê°€ì…ì‹œ)
+    public boolean isUserIdDuplicate(String userId) {
+        String sql = "SELECT COUNT(*) FROM user WHERE user_id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	// È¸¿ø ÀüÃ¼¸ñ·Ï Á¶È¸
-	// ·¹ÄÚµå¸¦ DTO·Î º¯È¯ÇØ¼­ ArrayList¿¡ ´ã¾Æ¼­ ¸®ÅÏ
-	public ArrayList<UserDTO> Select() {
-		String sql = "select * from customer";
-		// Á¶È¸µÈ Customer Å×ÀÌºíÀÇ ¸ğµç µ¥ÀÌÅÍ¸¦ ´ã¾Æ¼­ ¸®ÅÏÇÒ ÀÚ·á±¸Á¶
-		ArrayList<UserDTO> customerlist = new ArrayList<UserDTO>();
-		try (// 2.DBMS¿¡ Á¢¼Ó
-				Connection con = DBUtil.getConnection();
-				// 3. SQL¹®À» ½ÇÇàÇÏ±â À§ÇÑ °´Ã¼¸¦ »ı¼º
-				PreparedStatement pstmt = con.prepareStatement(sql);) {
-			// 4. SQL¹® ½ÇÇà
-			ResultSet rs = pstmt.executeQuery();
-			// ¸ğµç µ¥ÀÌÅÍ¿¡ Á¢±ÙÀ» ÇÏ´Â°Ô ¾Æ´Ï¶ó sql¹®¿¡¼­ºÎÅÍ Á¶°ÇÀ» °É¾î¶ó
-//			while (rs.next()) {
-//				UserDTO customer = new UserDTO(rs.getString(1), rs.getString(2), rs.getString(3),
-//						rs.getString(4), rs.getDate(5));
-//				customerlist.add(customer);
-//			}
+    //6. ì „ì²´ íšŒì› ëª©ë¡ (ê´€ë¦¬ììš©)
+    public List<UserDTO> getAllUsers() {
+        List<UserDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM user";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Timestamp ts = rs.getTimestamp("joined_at");
+                LocalDateTime joinedAt = ts != null ? ts.toLocalDateTime() : null;
+                list.add(new UserDTO(
+                        rs.getInt("id"),
+                        rs.getString("user_id"),
+                        rs.getString("password"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        joinedAt,
+                        rs.getBoolean("is_admin"),
+                        rs.getInt("pay_balance"),
+                        rs.getInt("points_balance")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			return customerlist;
-		}
-
-	}
-
+    // 7. pay/points ì¦ê°(ì¶©ì „)
+    public boolean updatePayBalance(int id, int amount) {
+        String sql = "UPDATE user SET pay_balance = pay_balance + ? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, amount);
+            ps.setInt(2, id);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean updatePointsBalance(int id, int amount) {
+        String sql = "UPDATE user SET points_balance = points_balance + ? WHERE id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, amount);
+            ps.setInt(2, id);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
