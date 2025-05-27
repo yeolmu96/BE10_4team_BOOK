@@ -2,6 +2,7 @@ direction LR
 
     USER {
         INT     id             PK "고객ID"
+	varchar user_id
         VARCHAR name           "성명"
         DATETIME joined_at     "가입일"
         VARCHAR email          "이메일"
@@ -28,14 +29,19 @@ direction LR
         DECIMAL pay_used       "포인트 외 결제(충전금액 사용)"
         INT     points_earned  "적립된 포인트"
     }
+
+---------------------------------------------------------------------------------
+
+
     ORDER_ITEM {
         INT     id             PK "주문항목ID"
         INT     order_id       FK "주문ID"
         INT     book_id        FK "상품번호"
         INT     quantity       "수량"
     }
+
     REVIEW {
-        INT     id             PK "리뷰ID"
+        INT     id             PK "리뷰ID" -->
         INT     user_id        FK "고객ID"
         INT     book_id        FK "상품번호"
         TINYINT rating         "별점(1~5)"
@@ -48,6 +54,8 @@ direction LR
         TEXT    content        "내용"
         DATETIME created_at    "등록일시"
     }
+
+------------------------------------------------------------------------------------
 
     USER        ||--o{  ORDER        : "places"
     ORDER       ||--|{  ORDER_ITEM   : "contains"
