@@ -6,274 +6,274 @@ import java.util.Scanner;
 
 public class MenuController {
     private static final Scanner sc = new Scanner(System.in);
-    private final UserDTOImpl dao = new UserDTOImpl(); // User °ü·Ã DAO (DB Ã³¸®)
+    private final UserDTOImpl dao = new UserDTOImpl(); // User ê´€ë ¨ DAO (DB ì²˜ë¦¬)
 
     /**
-     * È¸¿ø°¡ÀÔ Ã³¸®
-     * @return true: ¼º°ø / false: ½ÇÆĞ
+     * íšŒì›ê°€ì… ì²˜ë¦¬
+     * @return true: ì„±ê³µ / false: ì‹¤íŒ¨
      */
     public boolean insertMenu() {
-        System.out.println("[È¸¿ø°¡ÀÔ]");
-        System.out.print("¾ÆÀÌµğ ÀÔ·Â: ");
+        System.out.println("[íšŒì›ê°€ì…]");
+        System.out.print("ì•„ì´ë”” ì…ë ¥: ");
         String id = sc.nextLine();
-        System.out.print("ºñ¹Ğ¹øÈ£ ÀÔ·Â: ");
+        System.out.print("ë¹„ë°€ë²ˆí˜¸ ì…ë ¥: ");
         String pw = sc.nextLine();
-        System.out.print("ÀÌ¸§ ÀÔ·Â: ");
+        System.out.print("ì´ë¦„ ì…ë ¥: ");
         String name = sc.nextLine();
-        System.out.print("ÀÌ¸ŞÀÏ ÀÔ·Â: ");
+        System.out.print("ì´ë©”ì¼ ì…ë ¥: ");
         String email = sc.nextLine();
-        System.out.print("°ü¸®ÀÚÀÔ´Ï±î? (y/n): ");
+        System.out.print("ê´€ë¦¬ìì…ë‹ˆê¹Œ? (y/n): ");
         String adminCheck = sc.nextLine();
         boolean isAdmin = adminCheck.equalsIgnoreCase("y");
 
         UserDTO newUser = new UserDTO(id, pw, name, email, isAdmin);
-        boolean result = dao.insert(newUser); // DB¿¡ È¸¿ø Á¤º¸ ÀúÀå (Áßº¹ °Ë»ç µî Æ÷ÇÔ)
+        boolean result = dao.insert(newUser); // DBì— íšŒì› ì •ë³´ ì €ì¥ (ì¤‘ë³µ ê²€ì‚¬ ë“± í¬í•¨)
 
         if (result) {
-            System.out.println("È¸¿ø°¡ÀÔ ¿Ï·á!");
+            System.out.println("íšŒì›ê°€ì… ì™„ë£Œ!");
             return true;
         } else {
-            System.out.println("È¸¿ø°¡ÀÔ ½ÇÆĞ! (Áßº¹ ID µî)");
+            System.out.println("íšŒì›ê°€ì… ì‹¤íŒ¨! (ì¤‘ë³µ ID ë“±)");
             return false;
         }
     }
 
     /**
-     * ·Î±×ÀÎ Ã³¸® (·Î±×ÀÎ ¼º°ø ½Ã UserDTO ¹İÈ¯)
-     * @return UserDTO: ·Î±×ÀÎ ¼º°ø ½Ã »ç¿ëÀÚ Á¤º¸ ¹İÈ¯ / ½ÇÆĞ ½Ã null
+     * ë¡œê·¸ì¸ ì²˜ë¦¬ (ë¡œê·¸ì¸ ì„±ê³µ ì‹œ UserDTO ë°˜í™˜)
+     * @return UserDTO: ë¡œê·¸ì¸ ì„±ê³µ ì‹œ ì‚¬ìš©ì ì •ë³´ ë°˜í™˜ / ì‹¤íŒ¨ ì‹œ null
      */
     public UserDTO loginMenu() {
-        System.out.println("[·Î±×ÀÎ]");
-        System.out.print("¾ÆÀÌµğ ÀÔ·Â: ");
+        System.out.println("[ë¡œê·¸ì¸]");
+        System.out.print("ì•„ì´ë”” ì…ë ¥: ");
         String id = sc.nextLine();
-        System.out.print("ºñ¹Ğ¹øÈ£ ÀÔ·Â: ");
+        System.out.print("ë¹„ë°€ë²ˆí˜¸ ì…ë ¥: ");
         String pw = sc.nextLine();
 
-        UserDTO user = dao.Login(id, pw); // DB¿¡¼­ À¯Àú Á¶È¸
+        UserDTO user = dao.Login(id, pw); // DBì—ì„œ ìœ ì € ì¡°íšŒ
         if (user != null) {
-            System.out.println(user.getName() + "´Ô È¯¿µÇÕ´Ï´Ù!");
+            System.out.println(user.getName() + "ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤!");
             return user;
         } else {
-            System.out.println("·Î±×ÀÎ ½ÇÆĞ! ¾ÆÀÌµğ/ºñ¹Ğ¹øÈ£¸¦ È®ÀÎÇÏ¼¼¿ä.");
+            System.out.println("ë¡œê·¸ì¸ ì‹¤íŒ¨! ì•„ì´ë””/ë¹„ë°€ë²ˆí˜¸ë¥¼ í™•ì¸í•˜ì„¸ìš”.");
             return null;
         }
     }
 
     /**
-     * È¸¿øÁ¤º¸ ¼öÁ¤
+     * íšŒì›ì •ë³´ ìˆ˜ì •
      */
     public void updateUserMenu(UserDTO user) {
-        // TODO: ±¸Çö (¿¹½Ã)
-        System.out.println("[È¸¿øÁ¤º¸ ¼öÁ¤]");
-        // ÇÊ¿äÇÑ Á¤º¸¸¸ ¹Ş´Â ½ÄÀ¸·Î...
-        System.out.print("º¯°æÇÒ ÀÌ¸ŞÀÏ ÀÔ·Â (ÇöÀç: " + user.getEmail() + "): ");
+        // TODO: êµ¬í˜„ (ì˜ˆì‹œ)
+        System.out.println("[íšŒì›ì •ë³´ ìˆ˜ì •]");
+        // í•„ìš”í•œ ì •ë³´ë§Œ ë°›ëŠ” ì‹ìœ¼ë¡œ...
+        System.out.print("ë³€ê²½í•  ì´ë©”ì¼ ì…ë ¥ (í˜„ì¬: " + user.getEmail() + "): ");
         String newEmail = sc.nextLine();
         if (!newEmail.isEmpty()) {
             user.setEmail(newEmail);
         }
-        System.out.print("º¯°æÇÒ ºñ¹Ğ¹øÈ£ ÀÔ·Â(°ø¹é: º¯°æ ¾ÈÇÔ): ");
+        System.out.print("ë³€ê²½í•  ë¹„ë°€ë²ˆí˜¸ ì…ë ¥(ê³µë°±: ë³€ê²½ ì•ˆí•¨): ");
         String newPw = sc.nextLine();
         if (!newPw.isEmpty()) {
             user.setPassword(newPw);
         }
         boolean result = dao.update(user);
         if (result) {
-            System.out.println("È¸¿øÁ¤º¸°¡ ¼öÁ¤µÇ¾ú½À´Ï´Ù.");
+            System.out.println("íšŒì›ì •ë³´ê°€ ìˆ˜ì •ë˜ì—ˆìŠµë‹ˆë‹¤.");
         } else {
-            System.out.println("È¸¿øÁ¤º¸ ¼öÁ¤ ½ÇÆĞ!");
+            System.out.println("íšŒì›ì •ë³´ ìˆ˜ì • ì‹¤íŒ¨!");
         }
     }
 
     /**
-     * È¸¿øÅ»Åğ
-     * @return true: Å»Åğ ¼º°ø, false: ½ÇÆĞ
+     * íšŒì›íƒˆí‡´
+     * @return true: íƒˆí‡´ ì„±ê³µ, false: ì‹¤íŒ¨
      */
     public boolean deleteUserMenu(UserDTO user) {
-        System.out.println("[È¸¿øÅ»Åğ]");
-        System.out.print("Á¤¸» Å»ÅğÇÏ½Ã°Ú½À´Ï±î? (y/n): ");
+        System.out.println("[íšŒì›íƒˆí‡´]");
+        System.out.print("ì •ë§ íƒˆí‡´í•˜ì‹œê² ìŠµë‹ˆê¹Œ? (y/n): ");
         String confirm = sc.nextLine();
         if (!confirm.equalsIgnoreCase("y")) {
-            System.out.println("Å»Åğ°¡ Ãë¼ÒµÇ¾ú½À´Ï´Ù.");
+            System.out.println("íƒˆí‡´ê°€ ì·¨ì†Œë˜ì—ˆìŠµë‹ˆë‹¤.");
             return false;
         }
         boolean result = dao.delete(user.getId());
         if (result) {
-            System.out.println("È¸¿øÅ»Åğ°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù.");
+            System.out.println("íšŒì›íƒˆí‡´ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤.");
             return true;
         } else {
-            System.out.println("È¸¿øÅ»Åğ ½ÇÆĞ!");
+            System.out.println("íšŒì›íƒˆí‡´ ì‹¤íŒ¨!");
             return false;
         }
     }
 
     public void bookListMenu() {
-        System.out.println("[µµ¼­ ¸ñ·Ï]");
-        // ¿¹½Ã: bookDao.getAllBooks()·Î ÀüÃ¼ ¸ñ·Ï ¹Ş¾Æ¿È
+        System.out.println("[ë„ì„œ ëª©ë¡]");
+        // ì˜ˆì‹œ: bookDao.getAllBooks()ë¡œ ì „ì²´ ëª©ë¡ ë°›ì•„ì˜´
         // List<BookDTO> bookList = bookDao.getAllBooks();
         // for (BookDTO book : bookList) {
-        //     System.out.println(book.getId() + ". " + book.getTitle() + " - " + book.getAuthor() + " (" + book.getPrice() + "¿ø)");
+        //     System.out.println(book.getId() + ". " + book.getTitle() + " - " + book.getAuthor() + " (" + book.getPrice() + "ì›)");
         // }
-        System.out.println("¡Ø µµ¼­ ¸ñ·Ï Ãâ·Â(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        System.out.println("â€» ë„ì„œ ëª©ë¡ ì¶œë ¥(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 2. µµ¼­ »ó¼¼ º¸±â - µµ¼­ ID·Î »ó¼¼ Á¤º¸ Ãâ·Â
+     * 2. ë„ì„œ ìƒì„¸ ë³´ê¸° - ë„ì„œ IDë¡œ ìƒì„¸ ì •ë³´ ì¶œë ¥
      */
     public void bookDetailMenu() {
-        System.out.println("[µµ¼­ »ó¼¼ º¸±â]");
-        System.out.print("»ó¼¼ Á¶È¸ÇÒ µµ¼­ID¸¦ ÀÔ·ÂÇÏ¼¼¿ä: ");
+        System.out.println("[ë„ì„œ ìƒì„¸ ë³´ê¸°]");
+        System.out.print("ìƒì„¸ ì¡°íšŒí•  ë„ì„œIDë¥¼ ì…ë ¥í•˜ì„¸ìš”: ");
         String bookId = sc.nextLine();
-        // ¿¹½Ã: BookDTO book = bookDao.getBookById(bookId);
+        // ì˜ˆì‹œ: BookDTO book = bookDao.getBookById(bookId);
         // if (book != null) {
         //     System.out.println(book.detailInfo());
         // } else {
-        //     System.out.println("Á¸ÀçÇÏÁö ¾Ê´Â µµ¼­ÀÔ´Ï´Ù.");
+        //     System.out.println("ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ë„ì„œì…ë‹ˆë‹¤.");
         // }
-        System.out.println("¡Ø µµ¼­ »ó¼¼Á¤º¸ Ãâ·Â(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        System.out.println("â€» ë„ì„œ ìƒì„¸ì •ë³´ ì¶œë ¥(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 3. µµ¼­ ±¸¸Å - À¯Àú, µµ¼­ID, ¼ö·® ¹Ş¾Æ ÁÖ¹® Ã³¸®
+     * 3. ë„ì„œ êµ¬ë§¤ - ìœ ì €, ë„ì„œID, ìˆ˜ëŸ‰ ë°›ì•„ ì£¼ë¬¸ ì²˜ë¦¬
      */
     public void purchaseBookMenu(UserDTO user) {
-        System.out.println("[µµ¼­ ±¸¸Å]");
-        System.out.print("±¸¸ÅÇÒ µµ¼­ID: ");
+        System.out.println("[ë„ì„œ êµ¬ë§¤]");
+        System.out.print("êµ¬ë§¤í•  ë„ì„œID: ");
         String bookId = sc.nextLine();
-        System.out.print("¼ö·®: ");
+        System.out.print("ìˆ˜ëŸ‰: ");
         int quantity = Integer.parseInt(sc.nextLine());
-        System.out.println("°áÁ¦ ¹æ¹ıÀ» ¼±ÅÃÇÏ¼¼¿ä. (1: ÆäÀÌ, 2: Æ÷ÀÎÆ®): ");
+        System.out.println("ê²°ì œ ë°©ë²•ì„ ì„ íƒí•˜ì„¸ìš”. (1: í˜ì´, 2: í¬ì¸íŠ¸): ");
         int payType = Integer.parseInt(sc.nextLine());
-        // ÁÖ¹® Ã³¸® ·ÎÁ÷ (ÀÜ¾×/Æ÷ÀÎÆ® Â÷°¨ µî)
+        // ì£¼ë¬¸ ì²˜ë¦¬ ë¡œì§ (ì”ì•¡/í¬ì¸íŠ¸ ì°¨ê° ë“±)
         // boolean success = orderDao.purchase(user, bookId, quantity, payType);
-        // if (success) System.out.println("±¸¸Å ¼º°ø!");
-        // else System.out.println("±¸¸Å ½ÇÆĞ(ÀÜ¾×/Àç°í ºÎÁ· µî)");
-        System.out.println("¡Ø ±¸¸Å Ã³¸®(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        // if (success) System.out.println("êµ¬ë§¤ ì„±ê³µ!");
+        // else System.out.println("êµ¬ë§¤ ì‹¤íŒ¨(ì”ì•¡/ì¬ê³  ë¶€ì¡± ë“±)");
+        System.out.println("â€» êµ¬ë§¤ ì²˜ë¦¬(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 4. ±¸¸Å ³»¿ª È®ÀÎ - ÇØ´ç À¯ÀúÀÇ ÁÖ¹® ±â·Ï Ãâ·Â
+     * 4. êµ¬ë§¤ ë‚´ì—­ í™•ì¸ - í•´ë‹¹ ìœ ì €ì˜ ì£¼ë¬¸ ê¸°ë¡ ì¶œë ¥
      */
     public void orderHistoryMenu(UserDTO user) {
-        System.out.println("[±¸¸Å ³»¿ª È®ÀÎ]");
+        System.out.println("[êµ¬ë§¤ ë‚´ì—­ í™•ì¸]");
         // List<OrderDTO> orders = orderDao.getOrdersByUser(user.getId());
         // for (OrderDTO order : orders) {
         //     System.out.println(order.simpleInfo());
         // }
-        System.out.println("¡Ø ±¸¸Å ³»¿ª(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        System.out.println("â€» êµ¬ë§¤ ë‚´ì—­(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 5. ¸®ºä ÀÛ¼º - µµ¼­ID, ÆòÁ¡, ³»¿ë ¹Ş¾Æ ¸®ºä µî·Ï
+     * 5. ë¦¬ë·° ì‘ì„± - ë„ì„œID, í‰ì , ë‚´ìš© ë°›ì•„ ë¦¬ë·° ë“±ë¡
      */
     public void writeReviewMenu(UserDTO user) {
-        System.out.println("[¸®ºä ÀÛ¼º]");
-        System.out.print("¸®ºä ÀÛ¼ºÇÒ µµ¼­ID: ");
+        System.out.println("[ë¦¬ë·° ì‘ì„±]");
+        System.out.print("ë¦¬ë·° ì‘ì„±í•  ë„ì„œID: ");
         String bookId = sc.nextLine();
-        System.out.print("ÆòÁ¡(1~5): ");
+        System.out.print("í‰ì (1~5): ");
         int rating = Integer.parseInt(sc.nextLine());
-        System.out.print("¸®ºä ³»¿ë: ");
+        System.out.print("ë¦¬ë·° ë‚´ìš©: ");
         String content = sc.nextLine();
         // boolean success = reviewDao.insertReview(new ReviewDTO(user.getId(), bookId, rating, content));
-        // if (success) System.out.println("¸®ºä µî·Ï ¿Ï·á!");
-        // else System.out.println("¸®ºä µî·Ï ½ÇÆĞ(±¸¸Å ÀÌ·Â ¾øÀ½ µî)");
-        System.out.println("¡Ø ¸®ºä µî·Ï(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        // if (success) System.out.println("ë¦¬ë·° ë“±ë¡ ì™„ë£Œ!");
+        // else System.out.println("ë¦¬ë·° ë“±ë¡ ì‹¤íŒ¨(êµ¬ë§¤ ì´ë ¥ ì—†ìŒ ë“±)");
+        System.out.println("â€» ë¦¬ë·° ë“±ë¡(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 6. FAQ º¸±â - FAQ ¸ñ·Ï Ãâ·Â
+     * 6. FAQ ë³´ê¸° - FAQ ëª©ë¡ ì¶œë ¥
      */
     public void faqMenu() {
-        System.out.println("[FAQ º¸±â]");
+        System.out.println("[FAQ ë³´ê¸°]");
         // List<FaqDTO> faqList = faqDao.getAllFaq();
         // for (FaqDTO faq : faqList) {
         //     System.out.println(faq);
         // }
-        System.out.println("¡Ø FAQ Ãâ·Â(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        System.out.println("â€» FAQ ì¶œë ¥(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 1. µµ¼­ µî·Ï(°ü¸®ÀÚ) - ½Å±Ô µµ¼­ Á¤º¸ ÀÔ·Â ¹Ş¾Æ µî·Ï
+     * 1. ë„ì„œ ë“±ë¡(ê´€ë¦¬ì) - ì‹ ê·œ ë„ì„œ ì •ë³´ ì…ë ¥ ë°›ì•„ ë“±ë¡
      */
     public void registerBookMenu() {
-        System.out.println("[µµ¼­ µî·Ï]");
-        System.out.print("µµ¼­ Á¦¸ñ: ");
+        System.out.println("[ë„ì„œ ë“±ë¡]");
+        System.out.print("ë„ì„œ ì œëª©: ");
         String title = sc.nextLine();
-        System.out.print("ÀúÀÚ: ");
+        System.out.print("ì €ì: ");
         String author = sc.nextLine();
-        System.out.print("°¡°İ: ");
+        System.out.print("ê°€ê²©: ");
         int price = Integer.parseInt(sc.nextLine());
-        System.out.print("Ä«Å×°í¸®: ");
+        System.out.print("ì¹´í…Œê³ ë¦¬: ");
         String category = sc.nextLine();
         // BookDTO newBook = new BookDTO(title, author, price, category);
         // boolean success = bookDao.insert(newBook);
-        // if (success) System.out.println("µµ¼­ µî·Ï ¼º°ø!");
-        // else System.out.println("µµ¼­ µî·Ï ½ÇÆĞ!");
-        System.out.println("¡Ø µµ¼­ µî·Ï(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        // if (success) System.out.println("ë„ì„œ ë“±ë¡ ì„±ê³µ!");
+        // else System.out.println("ë„ì„œ ë“±ë¡ ì‹¤íŒ¨!");
+        System.out.println("â€» ë„ì„œ ë“±ë¡(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 2. µµ¼­ »èÁ¦(°ü¸®ÀÚ) - µµ¼­ ID·Î »èÁ¦
+     * 2. ë„ì„œ ì‚­ì œ(ê´€ë¦¬ì) - ë„ì„œ IDë¡œ ì‚­ì œ
      */
     public void deleteBookMenu() {
-        System.out.println("[µµ¼­ »èÁ¦]");
-        System.out.print("»èÁ¦ÇÒ µµ¼­ID: ");
+        System.out.println("[ë„ì„œ ì‚­ì œ]");
+        System.out.print("ì‚­ì œí•  ë„ì„œID: ");
         String bookId = sc.nextLine();
         // boolean success = bookDao.delete(bookId);
-        // if (success) System.out.println("µµ¼­ »èÁ¦ ¼º°ø!");
-        // else System.out.println("µµ¼­ »èÁ¦ ½ÇÆĞ(¾ø´Â ID)");
-        System.out.println("¡Ø µµ¼­ »èÁ¦(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        // if (success) System.out.println("ë„ì„œ ì‚­ì œ ì„±ê³µ!");
+        // else System.out.println("ë„ì„œ ì‚­ì œ ì‹¤íŒ¨(ì—†ëŠ” ID)");
+        System.out.println("â€» ë„ì„œ ì‚­ì œ(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 4. È¸¿ø ¸ñ·Ï Á¶È¸(°ü¸®ÀÚ) - ÀüÃ¼ È¸¿ø Ãâ·Â
+     * 4. íšŒì› ëª©ë¡ ì¡°íšŒ(ê´€ë¦¬ì) - ì „ì²´ íšŒì› ì¶œë ¥
      */
     public void userListMenu() {
-        System.out.println("[È¸¿ø ¸ñ·Ï Á¶È¸]");
+        System.out.println("[íšŒì› ëª©ë¡ ì¡°íšŒ]");
         // List<UserDTO> userList = dao.getAllUsers();
         // for (UserDTO user : userList) {
         //     System.out.println(user);
         // }
-        System.out.println("¡Ø È¸¿ø ¸ñ·Ï Ãâ·Â(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        System.out.println("â€» íšŒì› ëª©ë¡ ì¶œë ¥(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 5. FAQ µî·Ï(°ü¸®ÀÚ)
+     * 5. FAQ ë“±ë¡(ê´€ë¦¬ì)
      */
     public void registerFaqMenu() {
-        System.out.println("[FAQ µî·Ï]");
-        System.out.print("FAQ Á¦¸ñ: ");
+        System.out.println("[FAQ ë“±ë¡]");
+        System.out.print("FAQ ì œëª©: ");
         String title = sc.nextLine();
-        System.out.print("FAQ ³»¿ë: ");
+        System.out.print("FAQ ë‚´ìš©: ");
         String content = sc.nextLine();
         // FaqDTO faq = new FaqDTO(title, content);
         // boolean success = faqDao.insert(faq);
-        // if (success) System.out.println("FAQ µî·Ï ¼º°ø!");
-        // else System.out.println("FAQ µî·Ï ½ÇÆĞ!");
-        System.out.println("¡Ø FAQ µî·Ï(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        // if (success) System.out.println("FAQ ë“±ë¡ ì„±ê³µ!");
+        // else System.out.println("FAQ ë“±ë¡ ì‹¤íŒ¨!");
+        System.out.println("â€» FAQ ë“±ë¡(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 
     /**
-     * 6. FAQ ¼öÁ¤/»èÁ¦(°ü¸®ÀÚ)
+     * 6. FAQ ìˆ˜ì •/ì‚­ì œ(ê´€ë¦¬ì)
      */
     public void updateFaqMenu() {
-        System.out.println("[FAQ ¼öÁ¤/»èÁ¦]");
-        System.out.print("¼öÁ¤/»èÁ¦ÇÒ FAQ ID: ");
+        System.out.println("[FAQ ìˆ˜ì •/ì‚­ì œ]");
+        System.out.print("ìˆ˜ì •/ì‚­ì œí•  FAQ ID: ");
         String faqId = sc.nextLine();
-        System.out.print("1. ¼öÁ¤  2. »èÁ¦ : ");
+        System.out.print("1. ìˆ˜ì •  2. ì‚­ì œ : ");
         int mode = Integer.parseInt(sc.nextLine());
         if (mode == 1) {
-            System.out.print("¼öÁ¤ÇÒ ³»¿ë ÀÔ·Â: ");
+            System.out.print("ìˆ˜ì •í•  ë‚´ìš© ì…ë ¥: ");
             String content = sc.nextLine();
             // boolean success = faqDao.update(faqId, content);
-            // if (success) System.out.println("FAQ ¼öÁ¤ ¼º°ø!");
-            // else System.out.println("FAQ ¼öÁ¤ ½ÇÆĞ!");
+            // if (success) System.out.println("FAQ ìˆ˜ì • ì„±ê³µ!");
+            // else System.out.println("FAQ ìˆ˜ì • ì‹¤íŒ¨!");
         } else if (mode == 2) {
             // boolean success = faqDao.delete(faqId);
-            // if (success) System.out.println("FAQ »èÁ¦ ¼º°ø!");
-            // else System.out.println("FAQ »èÁ¦ ½ÇÆĞ!");
+            // if (success) System.out.println("FAQ ì‚­ì œ ì„±ê³µ!");
+            // else System.out.println("FAQ ì‚­ì œ ì‹¤íŒ¨!");
         } else {
-            System.out.println("Àß¸øµÈ ¼±ÅÃÀÔ´Ï´Ù.");
+            System.out.println("ì˜ëª»ëœ ì„ íƒì…ë‹ˆë‹¤.");
         }
-        System.out.println("¡Ø FAQ ¼öÁ¤/»èÁ¦(ÀÓ½Ã). ½ÇÁ¦ ±¸Çö ½Ã DB ¿¬µ¿ ÇÊ¿ä");
+        System.out.println("â€» FAQ ìˆ˜ì •/ì‚­ì œ(ì„ì‹œ). ì‹¤ì œ êµ¬í˜„ ì‹œ DB ì—°ë™ í•„ìš”");
     }
 }

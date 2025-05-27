@@ -13,15 +13,15 @@ public class UserDTO {
     private int point;
     private boolean isAdmin;
 
-    // ±âº» »ı¼ºÀÚ
+    // ê¸°ë³¸ ìƒì„±ì
     public UserDTO() {}
 
-    // È¸¿ø°¡ÀÔ ½Ã »ç¿ë
+    // íšŒì›ê°€ì…ìš© ìƒì„±ì
     public UserDTO(String id, String password, String name, String email, boolean isAdmin) {
         this(id, password, name, email, LocalDate.now(), 0, 0, isAdmin);
     }
 
-    // ¸ğµç ÇÊµå ÀÔ·Â »ı¼ºÀÚ (DBÁ¶È¸/Å×½ºÆ®¿ë)
+    // ì „ì²´í•„ë“œ ìƒì„±ì (DB ì¡°íšŒ ë“±ì—ì„œ ì‚¬ìš©)
     public UserDTO(String id, String password, String name, String email, LocalDate joinDate,
                    int pay, int point, boolean isAdmin) {
         this.id = id;
@@ -34,7 +34,7 @@ public class UserDTO {
         this.isAdmin = isAdmin;
     }
 
-    // getter¸¸ (id, name, joinDate)
+    // getter
     public String getId() { return id; }
     public String getPassword() { return password; }
     public String getName() { return name; }
@@ -44,33 +44,25 @@ public class UserDTO {
     public int getPoint() { return point; }
     public boolean isAdmin() { return isAdmin; }
 
-    // setter (°¡º¯ Á¤º¸¸¸)
+    // setter
     public void setPassword(String password) { this.password = password; }
     public void setEmail(String email) { this.email = email; }
     public void setPay(int pay) { this.pay = pay; }
     public void setPoint(int point) { this.point = point; }
 
-    // toString ¿À¹ö¶óÀÌµå (µğ¹ö±ë, ·Î±×, Å×½ºÆ®¿¡ À¯¿ë)
+    // toString/equals/hashCode (í¸ì˜ìƒ ì˜¤ë²„ë¼ì´ë”©)
     @Override
     public String toString() {
-        return "UserDTO{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", joinDate=" + joinDate +
-                ", pay=" + pay +
-                ", point=" + point +
-                ", isAdmin=" + isAdmin +
-                '}';
+        return String.format("ID: %s, ì´ë¦„: %s, ì´ë©”ì¼: %s, ê°€ì…ì¼: %s, ì”ì•¡: %d, í¬ì¸íŠ¸: %d, ê´€ë¦¬ì: %s",
+                id, name, email, joinDate, pay, point, isAdmin ? "O" : "X");
     }
 
-    // equals/hashCode (ÄÃ·º¼Ç, ºñ±³, Å×½ºÆ®¿ë)
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserDTO)) return false;
-        UserDTO userDTO = (UserDTO) o;
-        return Objects.equals(id, userDTO.id);
+        UserDTO user = (UserDTO) o;
+        return Objects.equals(id, user.id);
     }
 
     @Override

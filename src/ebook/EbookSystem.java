@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import ebook.controller.MenuController;
-import ebook.model.UserDTO; // ·Î±×ÀÎ °á°ú¸¦ User °´Ã¼·Î ¹Ş´Â´Ù°í °¡Á¤
+import ebook.model.UserDTO; // ë¡œê·¸ì¸ ê²°ê³¼ë¥¼ User ê°ì²´ë¡œ ë°›ëŠ”ë‹¤ê³  ê°€ì •
 
 public class EbookSystem {
 	public static void main(String[] args) throws IOException {
@@ -12,15 +12,15 @@ public class EbookSystem {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
 			System.out.println("******Ebook-Store********");
-			System.out.println("1. ·Î±×ÀÎ");
-			System.out.println("2. È¸¿ø°¡ÀÔ");
-			System.out.println("3. FAQ º¸±â");
-			System.out.println("0. Á¾·á");
-			System.out.print("¿øÇÏ´Â ÀÛ¾÷À» ¼±ÅÃÇÏ¼¼¿ä: ");
+			System.out.println("1. ë¡œê·¸ì¸");
+			System.out.println("2. íšŒì›ê°€ì…");
+			System.out.println("3. FAQ ë³´ê¸°");
+			System.out.println("0. ì¢…ë£Œ");
+			System.out.print("ì›í•˜ëŠ” ì‘ì—…ì„ ì„ íƒí•˜ì„¸ìš”: ");
 			int choice = Integer.parseInt(br.readLine());
 			switch (choice) {
 			case 1:
-				UserDTO loginUser = ui.loginMenu(); // ·Î±×ÀÎ ¼º°ø ½Ã User °´Ã¼ ¹İÈ¯
+				UserDTO loginUser = ui.loginMenu(); // ë¡œê·¸ì¸ ì„±ê³µ ì‹œ User ê°ì²´ ë°˜í™˜
 				if (loginUser != null) {
 					if (loginUser.isAdmin()) {
 						startAdminMenu(loginUser);
@@ -28,128 +28,128 @@ public class EbookSystem {
 						startUserMenu(loginUser);
 					}
 				} else {
-					System.out.println("·Î±×ÀÎ ½ÇÆĞ! ¾ÆÀÌµğ/ºñ¹Ğ¹øÈ£¸¦ È®ÀÎÇÏ¼¼¿ä.");
+					System.out.println("ë¡œê·¸ì¸ ì‹¤íŒ¨! ì•„ì´ë””/ë¹„ë°€ë²ˆí˜¸ë¥¼ í™•ì¸í•˜ì„¸ìš”.");
 				}
 				break;
 			case 2:
 				boolean regSuccess = ui.insertMenu();
 				if (regSuccess) {
-					System.out.println("È¸¿ø°¡ÀÔ ¼º°ø! ÀÌÁ¦ ·Î±×ÀÎÀ» ÁøÇàÇÏ¼¼¿ä.");
+					System.out.println("íšŒì›ê°€ì… ì„±ê³µ! ì´ì œ ë¡œê·¸ì¸ì„ ì§„í–‰í•˜ì„¸ìš”.");
 				} else {
-					System.out.println("È¸¿ø°¡ÀÔ ½ÇÆĞ! ´Ù½Ã ½ÃµµÇÏ¼¼¿ä.");
+					System.out.println("íšŒì›ê°€ì… ì‹¤íŒ¨! ë‹¤ì‹œ ì‹œë„í•˜ì„¸ìš”.");
 				}
 				break;
 			case 3:
 				ui.faqMenu();
 				break;
 			case 0:
-				System.out.println("ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+				System.out.println("í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 				System.exit(0);
 			default:
-				System.out.println("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù. ´Ù½Ã ¼±ÅÃÇÏ¼¼¿ä.");
+				System.out.println("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤. ë‹¤ì‹œ ì„ íƒí•˜ì„¸ìš”.");
 			}
 		}
 	}
 
-	// ÀÏ¹İ È¸¿ø ¸Ş´º
+	// ì¼ë°˜ íšŒì› ë©”ë‰´
 	public static void startUserMenu(UserDTO user) throws IOException {
 		MenuController ui = new MenuController();
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
-			System.out.println("======Ebook-Store(ÀÏ¹İÈ¸¿ø)======");
-			System.out.println(user.getName() + "´Ô È¯¿µÇÕ´Ï´Ù!");
-			System.out.println("1. µµ¼­ ¸ñ·Ï º¸±â");
-			System.out.println("2. µµ¼­ »ó¼¼ º¸±â");
-			System.out.println("3. µµ¼­ ±¸¸Å");
-			System.out.println("4. ±¸¸Å ³»¿ª È®ÀÎ ");
-			System.out.println("5. ¸®ºä ÀÛ¼º");
+			System.out.println("======Ebook-Store(ì¼ë°˜íšŒì›)======");
+			System.out.println(user.getName() + "ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤!");
+			System.out.println("1. ë„ì„œ ëª©ë¡ ë³´ê¸°");
+			System.out.println("2. ë„ì„œ ìƒì„¸ ë³´ê¸°");
+			System.out.println("3. ë„ì„œ êµ¬ë§¤");
+			System.out.println("4. êµ¬ë§¤ ë‚´ì—­ í™•ì¸ ");
+			System.out.println("5. ë¦¬ë·° ì‘ì„±");
 			System.out.println("6. FAQ");
-			System.out.println("7. ·Î±×¾Æ¿ô");
-			System.out.println("0. ÇÁ·Î±×·¥ Á¾·á");
-			System.out.print("¸Ş´º ¼±ÅÃ: ");
+			System.out.println("7. ë¡œê·¸ì•„ì›ƒ");
+			System.out.println("0. í”„ë¡œê·¸ë¨ ì¢…ë£Œ");
+			System.out.print("ë©”ë‰´ ì„ íƒ: ");
 			/*
-			 * 1. µµ¼­ ¸ñ·Ï º¸±â 2. µµ¼­ »ó¼¼ º¸±â 3. µµ¼­ ±¸¸Å 4. ±¸¸Å ³»¿ª È®ÀÎ 5. ¸®ºä ÀÛ¼º 6. FAQ º¸±â 7. ·Î±×¾Æ¿ô 0.
-			 * ÇÁ·Î±×·¥ Á¾·á
+			 * 1. ë„ì„œ ëª©ë¡ ë³´ê¸° 2. ë„ì„œ ìƒì„¸ ë³´ê¸° 3. ë„ì„œ êµ¬ë§¤ 4. êµ¬ë§¤ ë‚´ì—­ í™•ì¸ 5. ë¦¬ë·° ì‘ì„± 6. FAQ ë³´ê¸° 7. ë¡œê·¸ì•„ì›ƒ 0.
+			 * í”„ë¡œê·¸ë¨ ì¢…ë£Œ
 			 * 
 			 */
 			int choice = Integer.parseInt(br.readLine());
 			switch (choice) {
-			    case 1: // µµ¼­ ¸ñ·Ï º¸±â
+			    case 1: // ë„ì„œ ëª©ë¡ ë³´ê¸°
 			        ui.bookListMenu();
 			        break;
-			    case 2: // µµ¼­ »ó¼¼ º¸±â
+			    case 2: // ë„ì„œ ìƒì„¸ ë³´ê¸°
 			        ui.bookDetailMenu();
 			        break;
-			    case 3: // µµ¼­ ±¸¸Å
+			    case 3: // ë„ì„œ êµ¬ë§¤
 			        ui.purchaseBookMenu(user);
 			        break;
-			    case 4: // ±¸¸Å ³»¿ª È®ÀÎ
+			    case 4: // êµ¬ë§¤ ë‚´ì—­ í™•ì¸
 			        ui.orderHistoryMenu(user);
 			        break;
-			    case 5: // ¸®ºä ÀÛ¼º
+			    case 5: // ë¦¬ë·° ì‘ì„±
 			        ui.writeReviewMenu(user);
 			        break;
-			    case 6: // FAQ º¸±â
+			    case 6: // FAQ ë³´ê¸°
 			        ui.faqMenu();
 			        break;
-			    case 7: // ·Î±×¾Æ¿ô
-			        System.out.println("·Î±×¾Æ¿ôÇÕ´Ï´Ù.");
+			    case 7: // ë¡œê·¸ì•„ì›ƒ
+			        System.out.println("ë¡œê·¸ì•„ì›ƒí•©ë‹ˆë‹¤.");
 			        return;
-			    case 0: // ÇÁ·Î±×·¥ Á¾·á
-			        System.out.println("ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+			    case 0: // í”„ë¡œê·¸ë¨ ì¢…ë£Œ
+			        System.out.println("í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 			        System.exit(0);
 			    default:
-			        System.out.println("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù.");
+			        System.out.println("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤.");
 			}
 
 		}
 	}
 
-	// °ü¸®ÀÚ ¸Ş´º
+	// ê´€ë¦¬ì ë©”ë‰´
 	public static void startAdminMenu(UserDTO user) throws IOException {
 	    MenuController ui = new MenuController();
 	    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	    while (true) {
-	        System.out.println("======Ebook-Store(°ü¸®ÀÚ)======");
-	        System.out.println("°ü¸®ÀÚ " + user.getName() + "´Ô È¯¿µÇÕ´Ï´Ù!");
-	        System.out.println("1. µµ¼­ µî·Ï");
-	        System.out.println("2. µµ¼­ »èÁ¦");
-	        System.out.println("3. µµ¼­ ¸ñ·Ï º¸±â");
-	        System.out.println("4. È¸¿ø ¸ñ·Ï Á¶È¸");
-	        System.out.println("5. FAQ µî·Ï");
-	        System.out.println("6. FAQ ¼öÁ¤/»èÁ¦");
-	        System.out.println("7. ·Î±×¾Æ¿ô");
-	        System.out.println("0. ÇÁ·Î±×·¥ Á¾·á");
-	        System.out.print("¸Ş´º ¼±ÅÃ: ");
+	        System.out.println("======Ebook-Store(ê´€ë¦¬ì)======");
+	        System.out.println("ê´€ë¦¬ì " + user.getName() + "ë‹˜ í™˜ì˜í•©ë‹ˆë‹¤!");
+	        System.out.println("1. ë„ì„œ ë“±ë¡");
+	        System.out.println("2. ë„ì„œ ì‚­ì œ");
+	        System.out.println("3. ë„ì„œ ëª©ë¡ ë³´ê¸°");
+	        System.out.println("4. íšŒì› ëª©ë¡ ì¡°íšŒ");
+	        System.out.println("5. FAQ ë“±ë¡");
+	        System.out.println("6. FAQ ìˆ˜ì •/ì‚­ì œ");
+	        System.out.println("7. ë¡œê·¸ì•„ì›ƒ");
+	        System.out.println("0. í”„ë¡œê·¸ë¨ ì¢…ë£Œ");
+	        System.out.print("ë©”ë‰´ ì„ íƒ: ");
 
 	        int choice = Integer.parseInt(br.readLine());
 	        switch (choice) {
-	            case 1: // µµ¼­ µî·Ï
+	            case 1: // ë„ì„œ ë“±ë¡
 	                ui.registerBookMenu();
 	                break;
-	            case 2: // µµ¼­ »èÁ¦
+	            case 2: // ë„ì„œ ì‚­ì œ
 	                ui.deleteBookMenu();
 	                break;
-	            case 3: // µµ¼­ ¸ñ·Ï º¸±â
+	            case 3: // ë„ì„œ ëª©ë¡ ë³´ê¸°
 	                ui.bookListMenu();
 	                break;
-	            case 4: // È¸¿ø ¸ñ·Ï Á¶È¸
+	            case 4: // íšŒì› ëª©ë¡ ì¡°íšŒ
 	                ui.userListMenu();
 	                break;
-	            case 5: // FAQ µî·Ï
+	            case 5: // FAQ ë“±ë¡
 	                ui.registerFaqMenu();
 	                break;
-	            case 6: // FAQ ¼öÁ¤/»èÁ¦
+	            case 6: // FAQ ìˆ˜ì •/ì‚­ì œ
 	                ui.updateFaqMenu();
 	                break;
-	            case 7: // ·Î±×¾Æ¿ô
-	                System.out.println("·Î±×¾Æ¿ôÇÕ´Ï´Ù.\n");
+	            case 7: // ë¡œê·¸ì•„ì›ƒ
+	                System.out.println("ë¡œê·¸ì•„ì›ƒí•©ë‹ˆë‹¤.\n");
 	                return;
-	            case 0: // ÇÁ·Î±×·¥ Á¾·á
-	                System.out.println("ÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù.");
+	            case 0: // í”„ë¡œê·¸ë¨ ì¢…ë£Œ
+	                System.out.println("í”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 	                System.exit(0);
 	            default:
-	                System.out.println("Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù.\n");
+	                System.out.println("ì˜ëª»ëœ ì…ë ¥ì…ë‹ˆë‹¤.\n");
 	        }
 	    }
 	}
