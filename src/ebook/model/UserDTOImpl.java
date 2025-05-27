@@ -6,26 +6,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 //Customer테이블을 엑세스하는 모든 기능을 구현
 public class UserDTOImpl {
 	// 회원등록
-	public int insert(UserDTO user) {
-		String sql = "insert into ebook_store values(?,?,?,?,sysdate())";
+	public boolean insert(UserDTO user) {
+		String sql = "insert into ebook_store values(null,?,?,?,?,?,?,?,?))";
 		Connection con = null;
 		PreparedStatement ptmt = null;
-		int result = 0;
+		boolean result = false;
 		try {
 			con = DBUtil.getConnection();
 			System.out.println("연결성공" + con);
 			ptmt = con.prepareStatement(sql);
 			System.out.println("Statement객체생성=>" + ptmt);
+			// user_id(string),name(String),joined_At(datetime),
+			// email(String),password(String),is_admin(boolean)
+			// pay_balance(int),pints_balance(int)
 			ptmt.setString(1, user.getId());
-//			ptmt.setString(2, user.getPass());
-//			ptmt.setString(3, user.getName());
-//			ptmt.setString(4, user.getAddr());
-			result = ptmt.executeUpdate();
+			ptmt.setString(2, user.getPassword());
+			ptmt.setString(3, user.getName());
+			ptmt.setString(4, user.getEmail());
+			ptmt.setDate(5, java.sql.Date.valueOf(user.getJoinDate()));
+			ptmt.setBoolean(6, user.isAdmin());
+			ptmt.setInt(7, user.getPay());
+			ptmt.setInt(8, user.getPoint());
+			if(ptmt.executeUpdate()!=0) {
+				result=true;
+			}
 			System.out.println(result + "개 행 삽입성공");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -36,14 +46,14 @@ public class UserDTOImpl {
 	}
 
 	// 로그인메소드
-	//pk로 비교한 경우에는 무조건 조회된 레코드는 1개 - 레코드 1개만 리턴되므로 DTO로 변환해서 리턴하는것이 일반적
+	// pk로 비교한 경우에는 무조건 조회된 레코드는 1개 - 레코드 1개만 리턴되므로 DTO로 변환해서 리턴하는것이 일반적
 	public UserDTO Login(String id, String pass) {
 		String sql = "select * from customer where id=? and pass=?";
-		UserDTO user =null;
+		UserDTO user = null;
 		try (Connection con = DBUtil.getConnection(); PreparedStatement pstmt = con.prepareStatement(sql);) {
 			pstmt.setString(1, id);
 			pstmt.setString(2, pass);
-			//pk로 비교시 리턴값은 무조건 한개밖에 없다 고로 if처리
+			// pk로 비교시 리턴값은 무조건 한개밖에 없다 고로 if처리
 //			try (ResultSet rs = pstmt.executeQuery();) {
 //				if(rs.next()) {
 //					user= new UserDTO(rs.getString(1), rs.getString(2), rs.getString(3),
@@ -81,9 +91,9 @@ public class UserDTOImpl {
 	}
 
 	// 회원탈퇴
-	public int delete(String id) {
+	public boolean delete(String id) {
 		String sql = "delete from customer where id=? ";
-		int result = 0;
+		boolean result =false;
 		try (// 2.DBMS에 접속
 				Connection con = DBUtil.getConnection();
 				// 3. SQL문을 실행하기 위한 객체를 생성
@@ -92,7 +102,9 @@ public class UserDTOImpl {
 			// 4. SQL문 실행
 			int rs = ptmt.executeUpdate();
 			// 5.실행결과 처리
-			result = rs;
+			if(rs!=0) {
+				result=true;
+			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -148,6 +160,11 @@ public class UserDTOImpl {
 			return customerlist;
 		}
 
+	}
+
+	public boolean update(UserDTO user) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
