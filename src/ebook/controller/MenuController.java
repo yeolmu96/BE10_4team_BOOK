@@ -80,7 +80,7 @@ public class MenuController {
 	}
 
 	//회원탈퇴  return true: 탈퇴 성공, false: 실패
-	public boolean deleteUserMenu(UserDTO user) {
+	public boolean deleteUserMenu() {
 		System.out.println("[회원탈퇴]");
 		System.out.print("정말 탈퇴하시겠습니까? (y/n): ");
 		String confirm = sc.nextLine();
@@ -88,7 +88,8 @@ public class MenuController {
 			System.out.println("탈퇴가 취소되었습니다.");
 			return false;
 		}
-		boolean result = dao.delete(user.getId());
+		String userid= sc.nextLine();
+		boolean result = dao.delete(userid);
 		if (result) {
 			System.out.println("회원탈퇴가 완료되었습니다.");
 			return true;

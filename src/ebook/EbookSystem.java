@@ -14,10 +14,18 @@ public class EbookSystem {
 			System.out.println("******Ebook-Store********");
 			System.out.println("1. 로그인");
 			System.out.println("2. 회원가입");
-			System.out.println("3. FAQ 보기");
+			System.out.println("3. 회원탈퇴");
+			System.out.println("4. FAQ 보기");
 			System.out.println("0. 종료");
 			System.out.print("원하는 작업을 선택하세요: ");
-			int choice = Integer.parseInt(br.readLine());
+			int choice = 0;
+			try {
+				choice = Integer.parseInt(br.readLine());
+			}catch (IOException | NumberFormatException e)  {
+				// TODO Auto-generated catch block
+				System.out.println("잘못된 입력입니다. 다시 선택하세요.");
+				continue;
+			}
 			switch (choice) {
 			case 1:
 				UserDTO loginUser = ui.loginMenu(); // 로그인 성공 시 User 객체 반환
@@ -28,19 +36,22 @@ public class EbookSystem {
 						startUserMenu(loginUser);
 					}
 				} else {
-					System.out.println("로그인 실패! 아이디/비밀번호를 확인하세요.");
+					System.out.println("로그인 실패 아이디/비밀번호를 확인하세요.");
 				}
 				break;
 			case 2:
 				boolean regSuccess = ui.insertMenu();
 				if (regSuccess) {
-					System.out.println("회원가입 성공! 이제 로그인을 진행하세요.");
+					System.out.println("회원가입 성공 이제 로그인을 진행하세요.");
 				} else {
-					System.out.println("회원가입 실패! 다시 시도하세요.");
+					System.out.println("회원가입 실패 다시 시도하세요.");
 				}
 				break;
 			case 3:
 				ui.faqMenu();
+				break;
+			case 4:
+				ui.deleteUserMenu();
 				break;
 			case 0:
 				System.out.println("프로그램을 종료합니다.");
