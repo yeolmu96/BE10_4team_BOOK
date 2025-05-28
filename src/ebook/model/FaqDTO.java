@@ -1,4 +1,4 @@
-package store;
+package ebook.model;
 
 import java.util.Date;
 
@@ -19,16 +19,10 @@ public class FaqDTO {
 		this.content = content;
 		this.created_at = created_at;
 	}
-	public FaqDTO(int id, String title, String content) {
+	public FaqDTO(String title, String content) {
 		super();
-		this.id = id;
 		this.title = title;
 		this.content = content;
-	}
-	public FaqDTO(int id, String title) {
-		super();
-		this.id = id;
-		this.title = title;
 	}
 	
 	public int getId() {
