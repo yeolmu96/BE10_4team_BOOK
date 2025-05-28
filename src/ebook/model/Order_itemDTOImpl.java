@@ -56,4 +56,27 @@ public class Order_itemDTOImpl {
         }
         return list;
     }
+    //장바구니 조회 메소드
+    public List<Order_itemDTO> getCartItems(int id) {
+        List<Order_itemDTO> cartList = new ArrayList<>();
+        String sql = "SELECT * FROM order_item WHERE id = ? AND order_id IS NULL";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                // Order_itemDTO 생성 후 cartList에 추가 (필드명 맞게 수정)
+                Order_itemDTO item = new Order_itemDTO(
+                    rs.getInt("id"),
+                    rs.getInt("ORDER_ID"),
+                    rs.getInt("BOOK_ID"),
+                    rs.getInt("QUANTITY")
+                );
+                cartList.add(item);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cartList;
+    }
 }

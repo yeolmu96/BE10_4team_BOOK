@@ -302,4 +302,50 @@ public class MenuController {
 //			System.out.println("잘못된 선택입니다.");
 		}
 	}
+
+	public void addToCartMenu(UserDTO user) {
+	    System.out.println("[장바구니에 도서 담기]");
+	    System.out.print("도서ID 입력: ");
+	    String bookId = sc.nextLine();
+
+	    // Order_itemDTOImpl에서 addToCart 호출
+	    System.out.println(user.getId());
+	    System.out.println(Integer.parseInt(bookId));
+	    boolean added = oao.addToCart(Integer.parseInt(bookId));
+	    if (added) {
+	        System.out.println("장바구니에 추가 완료!");
+	    } else {
+	        System.out.println("이미 장바구니에 있거나, 추가 실패.");
+	    }
+	}
+
+	public void purchaseCartMenu(UserDTO user) {
+	    System.out.println("[장바구니 결제]");
+	    // 1. 장바구니 조회
+	    List<Order_itemDTO> cart = oiao.getCartItems(user.getId());
+
+	    if (cart == null || cart.isEmpty()) {
+	        System.out.println("장바구니가 비어 있습니다. 먼저 도서를 담아주세요.");
+	        return; // 결제 로직 종료
+	    }
+
+	    // (장바구니 목록 출력 등 추가 가능)
+	    System.out.println("장바구니에 담긴 도서 목록:");
+	    for (Order_itemDTO item : cart) {
+	        System.out.println("- 도서ID: " + item.getBookId());
+	    }
+
+	    // 결제 방법 등 입력
+	    System.out.print("결제 방법(1:페이, 2:포인트): ");
+	    int payType = Integer.parseInt(sc.nextLine());
+
+	    // 결제 처리
+	    boolean result = oao.purchaseCart(user, payType);
+	    if (result) {
+	        System.out.println("구매성공 주문 내역에서 확인하세요.");
+	    } else {
+	        System.out.println("구매 실패 (잔액 부족, 오류 등)");
+	    }
+	}
+
 }

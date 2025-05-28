@@ -39,28 +39,32 @@ public class ReviewDAOImpl {
 	}
 	
 	public boolean hasPurchased(int userId, int bookId) {
-		String sql = "select 1 from orders o join order_item oi on o.order_id = oi.order_id where o.member_id = ?  and oi.book_id = ? limit 1";
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, userId);
-			pstmt.setInt(2, bookId);
-			
-			try {
-				rs = pstmt.executeQuery();
-				return rs.next();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-		return false;
-	}
+        String sql = "select 1 "
+                + "from orders o "
+                + "join order_item oi on o.id = oi.order_id "
+                + "where o.user_id = ? and oi.book_id = ? "
+                + "limit 1";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, bookId);
+
+            try {
+                rs = pstmt.executeQuery();
+                return rs.next();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            DBUtil.close(rs, pstmt, conn);
+        }
+        return false;
+    }
 }

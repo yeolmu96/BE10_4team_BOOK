@@ -49,7 +49,6 @@ public class EbookSystem {
 				break;
 			case 3:
 				ui.deleteUserMenu();
-				
 				break;
 			case 4:
 				ui.faqMenu();
@@ -72,11 +71,13 @@ public class EbookSystem {
 			System.out.println(user.getName() + "님 환영합니다!");
 			System.out.println("1. 도서 목록 보기");
 			System.out.println("2. 도서 상세 보기");
-			System.out.println("3. 도서 구매");
-			System.out.println("4. 구매 내역 확인 ");
-			System.out.println("5. 리뷰 작성");
-			System.out.println("6. FAQ");
-			System.out.println("7. 로그아웃");
+			System.out.println("3. 장바구니에 도서 담기");
+			System.out.println("4. 장바구니 결제");
+			System.out.println("5. 도서 즉시구매");
+			System.out.println("6. 구매 내역 확인 ");
+			System.out.println("7. 리뷰 작성");
+			System.out.println("8. FAQ");
+			System.out.println("9. 로그아웃");
 			System.out.println("0. 프로그램 종료");
 			System.out.print("메뉴 선택: ");
 			/*
@@ -92,19 +93,25 @@ public class EbookSystem {
 			    case 2: // 도서 상세 보기
 			        ui.bookDetailMenu();
 			        break;
-			    case 3: // 도서 구매
+			    case 3: //장바구니에 도서 담기
+			    	ui.addToCartMenu(user);
+			    	break;
+			    case 4: // 장바구니 결제
+			        ui.purchaseCartMenu(user);
+			        break;
+			    case 5: // 도서  즉시 구매
 			        ui.purchaseBookMenu(user);
 			        break;
-			    case 4: // 구매 내역 확인
+			    case 6: // 구매 내역 확인
 			        ui.orderHistoryMenu(user);
 			        break;
-			    case 5: // 리뷰 작성
+			    case 7: // 리뷰 작성
 			        ui.writeReviewMenu(user);
 			        break;
-			    case 6: // FAQ 보기
+			    case 8: // FAQ 보기
 			        ui.faqMenu();
 			        break;
-			    case 7: // 로그아웃
+			    case 9: // 로그아웃
 			        System.out.println("로그아웃합니다.");
 			        return;
 			    case 0: // 프로그램 종료

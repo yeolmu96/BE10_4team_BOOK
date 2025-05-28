@@ -168,4 +168,52 @@ public class UserDTOImpl {
             return false;
         }
     }
+
+ // 1. 페이(Pay) 차감
+    public boolean usePay(int id, int totalAmount) {
+        String sql = "UPDATE user SET pay = pay - ? WHERE id = ? AND pay >= ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, totalAmount);
+            ps.setInt(2, id);
+            ps.setInt(3, totalAmount); // 잔액 부족 시 실패하도록 조건
+            int result = ps.executeUpdate();
+            return result == 1; // 성공적으로 1개 계좌 차감 시 true
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 2. 포인트(Point) 차감
+    public boolean usePoint(int id, int totalAmount) {
+        String sql = "UPDATE user SET point = point - ? WHERE id = ? AND point >= ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, totalAmount);
+            ps.setInt(2, id);
+            ps.setInt(3, totalAmount); // 포인트 부족 시 실패
+            int result = ps.executeUpdate();
+            return result == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 3. 포인트 적립
+    public boolean addPoint(int id, int pointsEarned) {
+        String sql = "UPDATE user SET point = point + ? WHERE id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, pointsEarned);
+            ps.setInt(2, id);
+            int result = ps.executeUpdate();
+            return result == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
