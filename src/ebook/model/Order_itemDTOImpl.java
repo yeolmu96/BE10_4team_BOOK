@@ -7,7 +7,7 @@ import java.util.List;
 //주문상품
 public class Order_itemDTOImpl {
     private Connection getConnection() throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/ebook_store?serverTimezone=UTC";
+        String url = "jdbc:mysql://192.168.0.114:3306/ebook_store?serverTimezone=UTC";
         String user = "team4";
         String pw = "team4";
         return DriverManager.getConnection(url, user, pw);
