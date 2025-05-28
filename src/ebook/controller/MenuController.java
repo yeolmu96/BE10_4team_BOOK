@@ -9,6 +9,7 @@ public class MenuController {
 	private static final Scanner sc = new Scanner(System.in);
 	private final UserDTOImpl dao = new UserDTOImpl();
 	private final BookDTOImpl bao = new BookDTOImpl();
+	private final FaqDAOImpl daofaq = new FaqDAOImpl();
 
 	//회원가입
 	//return true: 성공 / false: 실패
@@ -162,14 +163,13 @@ public class MenuController {
 	}
 
 
-	//6. FAQ 보기 - FAQ 목록 출력
+	//6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
 	public void faqMenu() {
 		System.out.println("[FAQ 보기]");
-		// List<FaqDTO> faqList = faqDao.getAllFaq();
-		// for (FaqDTO faq : faqList) {
-		// System.out.println(faq);
-		// }
-
+		 List<FaqDTO> faqList = daofaq.getAllFaq();
+		 for (FaqDTO faq : faqList) {
+			 System.out.println(faq);
+		 }
 	}
 
 	// 1. 도서 등록 (관리자)-신규 도서 정보 입력 받아 등록
@@ -214,40 +214,56 @@ public class MenuController {
 
 	}
 
-	//5. FAQ 등록(관리자)
+	//7. FAQ 등록 (관리자)
 	public void registerFaqMenu() {
-		System.out.println("[FAQ 등록]");
-		System.out.print("FAQ 제목: ");
+		System.out.println("[FAQ 등록하기]");
+		System.out.println("FAQ 제목: ");
 		String title = sc.nextLine();
-		System.out.print("FAQ 내용: ");
+		System.out.println("FAQ 내용: ");
 		String content = sc.nextLine();
-		// FaqDTO faq = new FaqDTO(title, content);
-		// boolean success = faqDao.insert(faq);
-		// if (success) System.out.println("FAQ 등록 성공!");
-		// else System.out.println("FAQ 등록 실패!");
-
+		int result = daofaq.registerFaqMenu(title, content);
+		
+		if(result > 0) {
+			System.out.println("FAQ 등록 완료!");
+		} else {
+			System.out.println("FAQ 등록 실패");
+		}
 	}
 
 	//6. FAQ 수정/삭제(관리자)
 	public void updateFaqMenu() {
 		System.out.println("[FAQ 수정/삭제]");
 		System.out.print("수정/삭제할 FAQ ID: ");
-		String faqId = sc.nextLine();
+		int faqId = sc.nextInt();
+		
 		System.out.print("1. 수정  2. 삭제 : ");
 		int mode = Integer.parseInt(sc.nextLine());
+		
 		if (mode == 1) {
 			System.out.print("수정할 내용 입력: ");
 			String content = sc.nextLine();
-			// boolean success = faqDao.update(faqId, content);
-			// if (success) System.out.println("FAQ 수정 성공!");
-			// else System.out.println("FAQ 수정 실패!");
+			int result = daofaq.updateFaqMenu(faqId, content);
+			
+			if(result > 0) {
+				System.out.println("FAQ 수정 성공!");
+			} else {
+				System.out.println("FAQ 수정 실패");
+			}
+//			 if (success) System.out.println("FAQ 수정 성공!");
+//			 else System.out.println("FAQ 수정 실패!");
 		} else if (mode == 2) {
-			// boolean success = faqDao.delete(faqId);
-			// if (success) System.out.println("FAQ 삭제 성공!");
-			// else System.out.println("FAQ 삭제 실패!");
-		} else {
-			System.out.println("잘못된 선택입니다.");
+			int result = daofaq.deleteFaqMenu(faqId);
+			
+			if(result > 0) {
+				System.out.println("FAQ 삭제 성공!");
+			} else {
+				System.out.println("FAQ 수정 실패");
+			}
+//			 boolean success = faqDao.delete(faqId);
+//			 if (success) System.out.println("FAQ 삭제 성공!");
+//			 else System.out.println("FAQ 삭제 실패!");
+//		} else {
+//			System.out.println("잘못된 선택입니다.");
 		}
-
 	}
 }
