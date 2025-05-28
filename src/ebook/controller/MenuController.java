@@ -201,7 +201,11 @@ public class MenuController {
 		System.out.println("[FAQ 보기]");
 		 List<FaqDTO> faqList = daofaq.getAllFaq();
 		 for (FaqDTO faq : faqList) {
-			 System.out.println(faq);
+			 System.out.println("게시글 번호: " + faq.getId());
+			 System.out.println("제목: " + faq.getTitle());
+			 System.out.println("내용: " + faq.getContent());
+			 System.out.println("날짜: " + faq.getCreated_at());
+			 System.out.println("---------------------------");
 		 }
 	}
 
