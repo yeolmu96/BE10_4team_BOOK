@@ -102,7 +102,9 @@ public class OrdersDTO {
 	public void setItems(List<Order_itemDTO> items) {
 		this.items = items;
 	}
-
+	public String simpleInfo() {
+	    return "주문번호: " + id + " | 날짜: " + orderDate;
+	}
 	@Override
 	public String toString() {
 		return String.format("주문번호: %d | 회원번호: %d | 일시: %s | 결제금액: %,d원 | Pay: %,d | 적립: %,d | 상태: %d | 상품: %s", id,

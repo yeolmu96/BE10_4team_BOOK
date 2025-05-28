@@ -9,10 +9,12 @@ public class MenuController {
 	private static final Scanner sc = new Scanner(System.in);
 	private final UserDTOImpl dao = new UserDTOImpl();
 	private final BookDTOImpl bao = new BookDTOImpl();
+	private final OrdersDTOImpl oao = new OrdersDTOImpl();
+	private final Order_itemDTOImpl oiao = new Order_itemDTOImpl();
 	private final FaqDAOImpl daofaq = new FaqDAOImpl();
 
-	//회원가입
-	//return true: 성공 / false: 실패
+	// 회원가입
+	// return true: 성공 / false: 실패
 	public boolean insertMenu() {
 		System.out.println("[회원가입]");
 		System.out.print("아이디 입력: ");
@@ -26,21 +28,17 @@ public class MenuController {
 		System.out.print("관리자입니까? (y/n): ");
 		String adminCheck = sc.nextLine();
 		boolean isAdmin = adminCheck.equalsIgnoreCase("y");
-
 		UserDTO newUser = new UserDTO(id, pw, name, email, isAdmin);
 		boolean result = dao.insert(newUser); // DB에 회원 정보 저장 (중복 검사 등 포함)
-
 		if (result) {
-			System.out.println("회원가입 완료!");
 			return true;
 		} else {
-			System.out.println("회원가입 실패! (중복 ID 등)");
 			return false;
 		}
 	}
 
-	//로그인 처리 -로그인 성공 시 UserDTO 반환
-	//return UserDTO: 로그인 성공 시 사용자 정보 반환 / 실패 시 null
+	// 로그인 처리 -로그인 성공 시 UserDTO 반환
+	// return UserDTO: 로그인 성공 시 사용자 정보 반환 / 실패 시 null
 	public UserDTO loginMenu() {
 		System.out.println("[로그인]");
 		System.out.print("아이디 입력: ");
@@ -58,7 +56,7 @@ public class MenuController {
 		}
 	}
 
-	//회원정보 수정
+	// 회원정보 수정
 	public void updateUserMenu(UserDTO user) {
 		System.out.println("[회원정보 수정]");
 		// 필요한 정보만 받는 식으로...
@@ -80,7 +78,7 @@ public class MenuController {
 		}
 	}
 
-	//회원탈퇴  return true: 탈퇴 성공, false: 실패
+	// 회원탈퇴 return true: 탈퇴 성공, false: 실패
 	public boolean deleteUserMenu() {
 		System.out.println("[회원탈퇴]");
 		System.out.print("정말 탈퇴하시겠습니까? (y/n): ");
@@ -89,8 +87,11 @@ public class MenuController {
 			System.out.println("탈퇴가 취소되었습니다.");
 			return false;
 		}
-		String userid= sc.nextLine();
-		boolean result = dao.delete(userid);
+		System.out.print("아이디 입력: ");
+		String userid = sc.nextLine();
+		System.out.print("비밀번호 입력: ");
+		String userpw = sc.nextLine();
+		boolean result = dao.delete(userid, userpw);
 		if (result) {
 			System.out.println("회원탈퇴가 완료되었습니다.");
 			return true;
@@ -102,12 +103,13 @@ public class MenuController {
 
 	// 도서 목록 보기
 	public void bookListMenu() {
-        List<BookDTO> books = bao.getAllBooks();
-        System.out.println("[도서 목록]");
-        for (BookDTO book : books) {
-            System.out.println(book);
-        }
+		List<BookDTO> books = bao.getAllBooks();
+		System.out.println("[도서 목록]");
+		for (BookDTO book : books) {
+			System.out.println(book);
+		}
 	}
+
 	// 2. 도서 상세 보기 - 도서 ID로 상세 정보 출력
 	public void bookDetailMenu() {
 		System.out.print("상세 조회할 도서 ID(book_id): ");
@@ -120,7 +122,7 @@ public class MenuController {
 		}
 	}
 
-	//3. 도서 구매 - 유저, 도서ID, 수량 받아 주문 처리
+	// 3. 도서 구매 - 유저, 도서ID, 수량 받아 주문 처리
 	public void purchaseBookMenu(UserDTO user) {
 		System.out.println("[도서 구매]");
 		System.out.print("구매할 도서ID: ");
@@ -129,24 +131,24 @@ public class MenuController {
 		int quantity = Integer.parseInt(sc.nextLine());
 		System.out.println("결제 방법을 선택하세요. (1: 페이, 2: 포인트): ");
 		int payType = Integer.parseInt(sc.nextLine());
-		// 주문 처리 로직 (잔액/포인트 차감 등)
-		// boolean success = orderDao.purchase(user, bookId, quantity, payType);
-		// if (success) System.out.println("구매 성공!");
-		// else System.out.println("구매 실패(잔액/재고 부족 등)");
+		 //주문 처리 로직 (잔액/포인트 차감 등)
+		 boolean success = oao.purchase(user, bookId, quantity, payType);
+		 if (success) System.out.println("구매 성공!");
+		 else System.out.println("구매 실패(잔액/재고 부족 등)");
 
 	}
 
-	//4. 구매 내역 확인 - 해당 유저의 주문 기록 출력
+	// 4. 구매 내역 확인 - 해당 유저의 주문 기록 출력
 	public void orderHistoryMenu(UserDTO user) {
 		System.out.println("[구매 내역 확인]");
-		// List<OrderDTO> orders = orderDao.getOrdersByUser(user.getId());
-		// for (OrderDTO order : orders) {
-		// System.out.println(order.simpleInfo());
-		// }
+		List<OrdersDTO> orders = oao.getOrdersByUserId(user.getId());
+		for (OrdersDTO order : orders) {
+			System.out.println(order.simpleInfo());
+		}
 
 	}
 
-	//5. 리뷰 작성 - 도서ID, 평점, 내용 받아 리뷰 등록
+	// 5. 리뷰 작성 - 도서ID, 평점, 내용 받아 리뷰 등록
 	public void writeReviewMenu(UserDTO user) {
 		System.out.println("[리뷰 작성]");
 		System.out.print("리뷰 작성할 도서ID: ");
@@ -162,14 +164,13 @@ public class MenuController {
 
 	}
 
-
-	//6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
+	// 6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
 	public void faqMenu() {
 		System.out.println("[FAQ 보기]");
-		 List<FaqDTO> faqList = daofaq.getAllFaq();
-		 for (FaqDTO faq : faqList) {
-			 System.out.println(faq);
-		 }
+		List<FaqDTO> faqList = daofaq.getAllFaq();
+		for (FaqDTO faq : faqList) {
+			System.out.println(faq);
+		}
 	}
 
 	// 1. 도서 등록 (관리자)-신규 도서 정보 입력 받아 등록
@@ -204,17 +205,19 @@ public class MenuController {
 		}
 	}
 
-	//4. 회원 목록 조회(관리자) - 전체 회원 출력
+	// 4. 회원 목록 조회(관리자) - 전체 회원 출력
 	public void userListMenu() {
 		System.out.println("[회원 목록 조회]");
-		// List<UserDTO> userList = dao.getAllUsers();
-		// for (UserDTO user : userList) {
-		// System.out.println(user);
-		// }
-
+		List<UserDTO> userList = dao.getAllUsers();
+		for (UserDTO user : userList) {
+			System.out.println("ID: " + user.getId());
+			System.out.println("이름: " + user.getName());
+			System.out.println("이메일: " + user.getEmail());
+			System.out.println("-------------------------");
+		}
 	}
 
-	//7. FAQ 등록 (관리자)
+	// 7. FAQ 등록 (관리자)
 	public void registerFaqMenu() {
 		System.out.println("[FAQ 등록하기]");
 		System.out.println("FAQ 제목: ");
@@ -222,29 +225,29 @@ public class MenuController {
 		System.out.println("FAQ 내용: ");
 		String content = sc.nextLine();
 		int result = daofaq.registerFaqMenu(title, content);
-		
-		if(result > 0) {
+
+		if (result > 0) {
 			System.out.println("FAQ 등록 완료!");
 		} else {
 			System.out.println("FAQ 등록 실패");
 		}
 	}
 
-	//6. FAQ 수정/삭제(관리자)
+	// 6. FAQ 수정/삭제(관리자)
 	public void updateFaqMenu() {
 		System.out.println("[FAQ 수정/삭제]");
 		System.out.print("수정/삭제할 FAQ ID: ");
 		int faqId = sc.nextInt();
-		
+
 		System.out.print("1. 수정  2. 삭제 : ");
 		int mode = Integer.parseInt(sc.nextLine());
-		
+
 		if (mode == 1) {
 			System.out.print("수정할 내용 입력: ");
 			String content = sc.nextLine();
 			int result = daofaq.updateFaqMenu(faqId, content);
-			
-			if(result > 0) {
+
+			if (result > 0) {
 				System.out.println("FAQ 수정 성공!");
 			} else {
 				System.out.println("FAQ 수정 실패");
@@ -253,8 +256,8 @@ public class MenuController {
 //			 else System.out.println("FAQ 수정 실패!");
 		} else if (mode == 2) {
 			int result = daofaq.deleteFaqMenu(faqId);
-			
-			if(result > 0) {
+
+			if (result > 0) {
 				System.out.println("FAQ 삭제 성공!");
 			} else {
 				System.out.println("FAQ 수정 실패");

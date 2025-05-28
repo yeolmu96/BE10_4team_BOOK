@@ -48,10 +48,11 @@ public class EbookSystem {
 				}
 				break;
 			case 3:
-				ui.faqMenu();
+				ui.deleteUserMenu();
+				
 				break;
 			case 4:
-				ui.deleteUserMenu();
+				ui.faqMenu();
 				break;
 			case 0:
 				System.out.println("프로그램을 종료합니다.");

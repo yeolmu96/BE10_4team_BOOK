@@ -85,11 +85,12 @@ public class UserDTOImpl {
     }
 
     //4. 회원탈퇴 (id로 삭제)
-    public boolean delete(String userid) {
-        String sql = "DELETE FROM user WHERE id=?";
+    public boolean delete(String userid,String userpw) {
+        String sql = "DELETE FROM user WHERE user_id=? and password=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, userid);
+            ps.setString(2, userpw);
             return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,6 +123,7 @@ public class UserDTOImpl {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Timestamp ts = rs.getTimestamp("joined_at");
+                //nullcheck , DB에서 받아온 Timestamp 값을 LocalDateTime으로 안전하게 변환
                 LocalDateTime joinedAt = ts != null ? ts.toLocalDateTime() : null;
                 list.add(new UserDTO(
                         rs.getInt("id"),
