@@ -195,7 +195,7 @@ public class MenuController {
 		// else System.out.println("리뷰 등록 실패(구매 이력 없음 등)");
 	}
 
-
+	//코딩싫어
 	//6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
 	public void faqMenu() {
 		System.out.println("[FAQ 보기]");
