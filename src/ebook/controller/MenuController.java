@@ -197,7 +197,7 @@ public class MenuController {
 		} else {
 			System.out.println("리뷰 등록 실패");
 		}
-
+	}
 		// boolean success = reviewDao.insertReview(new ReviewDTO(user.getId(), bookId,
 		// rating, content));
 		// if (success) System.out.println("리뷰 등록 완료!");
@@ -215,20 +215,6 @@ public class MenuController {
 			 System.out.println("날짜: " + faq.getCreated_at());
 			 System.out.println("---------------------------");
 		 }
-
-	}
-
-	// 6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
-	public void faqMenu() {
-		System.out.println("[FAQ 보기]");
-		List<FaqDTO> faqList = daofaq.getAllFaq();
-		for (FaqDTO faq : faqList) {
-			System.out.println("게시글 번호:"+faq.getId());
-			System.out.println("제목"+faq.getTitle());
-			System.out.println(faq.getContent());
-			System.out.println("\n게시일:"+faq.getCreated_at());
-			System.out.println("==================================");
-		}
 
 	}
 
