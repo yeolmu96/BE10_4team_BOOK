@@ -121,4 +121,20 @@ public class BookDTOImpl {
             return false;
         }
     }
+ // BookDTOImpl에서 책 가격 조회
+    public int getBookPrice(int bookId) {
+        int price = 0;
+        String sql = "SELECT price FROM book WHERE book_id = ?";
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, bookId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                price = rs.getInt("price");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return price;
+    }
 }
