@@ -203,6 +203,19 @@ public class MenuController {
 		// if (success) System.out.println("리뷰 등록 완료!");
 		// else System.out.println("리뷰 등록 실패(구매 이력 없음 등)");
 
+	//코딩싫어
+	//6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
+	public void faqMenu() {
+		System.out.println("[FAQ 보기]");
+		 List<FaqDTO> faqList = daofaq.getAllFaq();
+		 for (FaqDTO faq : faqList) {
+			 System.out.println("게시글 번호: " + faq.getId());
+			 System.out.println("제목: " + faq.getTitle());
+			 System.out.println("내용: " + faq.getContent());
+			 System.out.println("날짜: " + faq.getCreated_at());
+			 System.out.println("---------------------------");
+		 }
+
 	}
 
 	// 6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
@@ -216,6 +229,7 @@ public class MenuController {
 			System.out.println("\n게시일:"+faq.getCreated_at());
 			System.out.println("==================================");
 		}
+
 	}
 
 	// 1. 도서 등록 (관리자)-신규 도서 정보 입력 받아 등록
