@@ -1,14 +1,19 @@
 # BE10_4team_-
 BE10_4team_책갈피연합
 
-주제선정
-e-book 회원 전문 온라인 서점(배달 사절)
+[주제선정]
 
-요구사항정의서
+e-book 회원 전문 온라인 서점(배달 사절)
+  - 온라인으로 회원을 가입하여 e-book 판매로 운영하는 서점으로 코스트코 처럼 회원들에게만 판매 및 구입시 리워드 적립  
+
+[요구사항정의서]
+
 서점
+
 [기본 기능]
     -고객이 상품(책)조회
     -고객이 상품(책)을 구매(결제)하기
+	
 [추가 기능]
     -고객이 상품을 검색하기
     -카테고리별 조회하기(SF,로맨스,공포)(List)
@@ -17,6 +22,7 @@ e-book 회원 전문 온라인 서점(배달 사절)
     -고객이 FAQ관련 게시글 조회하기
 
 [구현기능]
+
 유즈케이스
 1.고객관리(User)
     -회원가입(insert)
@@ -26,6 +32,7 @@ e-book 회원 전문 온라인 서점(배달 사절)
     -관리자 식별(true,false)
     [고객테이블]
     고객아이디,성명,가입날짜,주소,전화번호,이메일,포인트...
+	
 2.상품관리(Book)
     -상품목록을 조회(select * from book)
     -카테고리별 조회(select * from book where category=?)
@@ -47,6 +54,8 @@ e-book 회원 전문 온라인 서점(배달 사절)
     -결제하기(책갈피페이,책갈피 포인트)
         -결제한 정보 조회하기
 
+
+
 erDiagram
     direction LR
 
@@ -59,6 +68,7 @@ erDiagram
         BOOLEAN is_admin       "관리자여부"
         INT     points         "포인트"
     }
+	
     BOOK {
         INT     id             PK "상품번호"
         VARCHAR title          "상품명"
@@ -69,6 +79,7 @@ erDiagram
         INT     stock          "재고수량"
         INT     sales_count    "판매량"
     }
+	
     ORDER {
         INT     id             PK "주문ID"
         INT     user_id        FK "고객ID"
@@ -78,12 +89,14 @@ erDiagram
         DECIMAL total_amount   "결제금액"
         INT     points_used    "사용포인트"
     }
+	
     ORDER_ITEM {
         INT     id             PK "주문항목ID"
         INT     order_id       FK "주문ID"
         INT     book_id        FK "상품번호"
         INT     quantity       "수량"
     }
+	
     REVIEW {
         INT     id             PK "리뷰ID"
         INT     user_id        FK "고객ID"
@@ -92,6 +105,7 @@ erDiagram
         TEXT    content        "리뷰내용"
         DATETIME created_at    "작성일시"
     }
+	
     FAQ {
         INT     id             PK "게시글ID"
         VARCHAR title          "제목"
