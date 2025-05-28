@@ -12,6 +12,7 @@ public class MenuController {
 	private final OrdersDTOImpl oao = new OrdersDTOImpl();
 	private final Order_itemDTOImpl oiao = new Order_itemDTOImpl();
 	private final FaqDAOImpl daofaq = new FaqDAOImpl();
+	private final ReviewDAOImpl daoreview = new ReviewDAOImpl();
 
 	// 회원가입
 	// return true: 성공 / false: 실패
@@ -152,16 +153,48 @@ public class MenuController {
 	public void writeReviewMenu(UserDTO user) {
 		System.out.println("[리뷰 작성]");
 		System.out.print("리뷰 작성할 도서ID: ");
-		String bookId = sc.nextLine();
+		int bookId = sc.nextInt();
+		sc.nextLine(); //버퍼 정리
+		
+		//구매 확인
+		if(!daoreview.hasPurchased(user.getId(), bookId)) {
+			System.out.println("이 책을 구매한 회원만 리뷰를 작성할 수 있습니다!");
+			return;
+		}
+		
 		System.out.print("평점(1~5): ");
-		int rating = Integer.parseInt(sc.nextLine());
+		int rating = 0;
+		
+		while(true) {
+			try {
+				rating = Integer.parseInt(sc.nextLine());
+				
+				if (rating >= 1 && rating <= 5) {
+					break;
+				} else {
+					System.out.print("평점은 1~5 사이의 숫자여야 합니다. 다시 입력:");
+				}
+			} catch (NumberFormatException e) {
+				System.out.print("숫자를 입력하세요. 다시 입력:");
+			}
+		}
+		
+		
 		System.out.print("리뷰 내용: ");
 		String content = sc.nextLine();
+		
+		int result = daoreview.writeReviewMenu(user.getId(), bookId, rating, content);
+		
+		if(result > 0) {
+			System.out.println("리뷰 등록 완료!");
+		} else {
+			System.out.println("리뷰 등록 실패");
+		}
+		
 		// boolean success = reviewDao.insertReview(new ReviewDTO(user.getId(), bookId,
 		// rating, content));
 		// if (success) System.out.println("리뷰 등록 완료!");
 		// else System.out.println("리뷰 등록 실패(구매 이력 없음 등)");
-
 	}
 
 	// 6. FAQ 보기 - FAQ 목록 출력 (관리자 및 일반 사용자)
