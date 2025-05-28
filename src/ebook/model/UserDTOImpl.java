@@ -171,7 +171,7 @@ public class UserDTOImpl {
 
  // 1. 페이(Pay) 차감
     public boolean usePay(int id, int totalAmount) {
-        String sql = "UPDATE user SET pay = pay - ? WHERE id = ? AND pay >= ?";
+    	String sql = "UPDATE user SET pay_balance = pay_balance - ? WHERE id = ? AND pay_balance >= ?";
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, totalAmount);
@@ -187,7 +187,7 @@ public class UserDTOImpl {
 
     // 2. 포인트(Point) 차감
     public boolean usePoint(int id, int totalAmount) {
-        String sql = "UPDATE user SET point = point - ? WHERE id = ? AND point >= ?";
+    	String sql = "UPDATE user SET points_balance = points_balance - ? WHERE id = ? AND points_balance >= ?";
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, totalAmount);
@@ -203,7 +203,7 @@ public class UserDTOImpl {
 
     // 3. 포인트 적립
     public boolean addPoint(int id, int pointsEarned) {
-        String sql = "UPDATE user SET point = point + ? WHERE id = ?";
+    	String sql = "UPDATE user SET points_balance = points_balance + ? WHERE id = ?";
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, pointsEarned);

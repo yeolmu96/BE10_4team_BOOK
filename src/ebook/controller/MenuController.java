@@ -210,7 +210,11 @@ public class MenuController {
 		System.out.println("[FAQ 보기]");
 		List<FaqDTO> faqList = daofaq.getAllFaq();
 		for (FaqDTO faq : faqList) {
-			System.out.println(faq);
+			System.out.println("게시글 번호:"+faq.getId());
+			System.out.println("제목"+faq.getTitle());
+			System.out.println(faq.getContent());
+			System.out.println("\n게시일:"+faq.getCreated_at());
+			System.out.println("==================================");
 		}
 	}
 
@@ -317,9 +321,9 @@ public class MenuController {
 		String bookId = sc.nextLine();
 
 		// Order_itemDTOImpl에서 addToCart 호출
-		System.out.println(user.getId());
-		System.out.println(Integer.parseInt(bookId));
-		boolean added = oao.addToCart(Integer.parseInt(bookId));
+//		System.out.println(user.getId());
+//		System.out.println(Integer.parseInt(bookId));
+		boolean added = oao.addToCart(Integer.parseInt(bookId),user.getId());
 		if (added) {
 			System.out.println("장바구니에 추가 완료!");
 		} else {

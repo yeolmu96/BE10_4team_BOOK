@@ -133,12 +133,11 @@ public class OrdersDTOImpl {
             }
 
             // 2. 주문 상세(도서 1권) 등록
-            String itemSql = "INSERT INTO order_item(order_id, book_id, user_id, quantity) VALUES (?, ?, ?, ?)";
+            String itemSql = "INSERT INTO order_item(order_id, book_id, quantity) VALUES (?, ?, ?)";
             PreparedStatement itemPs = con.prepareStatement(itemSql);
             itemPs.setInt(1, orderId);
             itemPs.setInt(2, Integer.parseInt(bookId));
-            itemPs.setInt(3, user.getId());
-            itemPs.setInt(4, quantity); // ebook이면 1 고정
+            itemPs.setInt(3, quantity);
 
             itemPs.executeUpdate();
 
@@ -165,16 +164,16 @@ public class OrdersDTOImpl {
     public boolean purchaseCart(UserDTO user, int payType) {
         Connection con = null;
         try {
-            con = getConnection();
-            con.setAutoCommit(false); // 트랜잭션 시작
+            con = getConnection(); // DB 연결 (auto-commit 기본 true)
 
-            // 1. 장바구니에서 결제할 도서들 정보 조회 (총액 등 계산용, 필요 시)
+            // [문제1: 장바구니(ORDER_ID IS NULL) 내 "내 도서"만 합산해야 한다]
+            // => 반드시 user_id 컬럼 기준으로 SELECT
             String sumSql = "SELECT SUM(b.price) AS total_amount " +
                             "FROM order_item oi " +
                             "JOIN book b ON oi.BOOK_ID = b.book_id " +
-                            "WHERE oi.id = ? AND oi.ORDER_ID IS NULL";
+                            "WHERE oi.user_id = ? AND oi.ORDER_ID IS NULL";
             PreparedStatement sumPs = con.prepareStatement(sumSql);
-            sumPs.setInt(1, user.getId());
+            sumPs.setInt(1, user.getId()); // 반드시 int형 PK id (user 테이블 PK)
             ResultSet sumRs = sumPs.executeQuery();
             int totalAmount = 0;
             if (sumRs.next()) {
@@ -183,17 +182,16 @@ public class OrdersDTOImpl {
             sumRs.close();
             sumPs.close();
 
-            // 2. orders 테이블에 주문 1건 INSERT
-            String orderSql = 
-            		"INSERT INTO orders(user_id, order_date, total_amount, "
-            		+ "pay_used, points_earned, status) " +
-                              "VALUES (?, NOW(), ?, ?, ?, ?)";
+            // [문제2: 주문 insert시도]
+            String orderSql =
+                "INSERT INTO orders(user_id, order_date, total_amount, pay_used, points_earned, status) " +
+                "VALUES (?, NOW(), ?, ?, ?, ?)";
             PreparedStatement orderPs = con.prepareStatement(orderSql, Statement.RETURN_GENERATED_KEYS);
             int payUsed = (payType == 1) ? totalAmount : 0;
             int pointsEarned = (int)(totalAmount * 0.05);
-            int status = 1; // 1: 결제완료 등
+            int status = 1;
 
-            orderPs.setInt(1, user.getId());
+            orderPs.setInt(1, user.getId()); // user 테이블의 id(PK)
             orderPs.setInt(2, totalAmount);
             orderPs.setInt(3, payUsed);
             orderPs.setInt(4, pointsEarned);
@@ -201,19 +199,19 @@ public class OrdersDTOImpl {
 
             orderPs.executeUpdate();
 
-            // 3. 생성된 order_id 받기
+            // [생성된 주문(order) PK값 받기]
             ResultSet rs = orderPs.getGeneratedKeys();
             int orderId = -1;
             if (rs.next()) {
                 orderId = rs.getInt(1);
             } else {
-                con.rollback();
+                System.out.println("주문 생성 실패");
                 return false;
             }
             rs.close();
             orderPs.close();
 
-            // 4. order_item에서 ORDER_ID가 NULL인 레코드들을 해당 주문으로 업데이트
+            // [문제3: 내 장바구니(order_item에서 ORDER_ID IS NULL, user_id=내 id)만 주문상세로 전환]
             String updateSql = "UPDATE order_item SET ORDER_ID = ? WHERE user_id = ? AND ORDER_ID IS NULL";
             PreparedStatement updatePs = con.prepareStatement(updateSql);
             updatePs.setInt(1, orderId);
@@ -221,34 +219,40 @@ public class OrdersDTOImpl {
             int updatedRows = updatePs.executeUpdate();
             updatePs.close();
 
-            // 5. 결제 방식에 따라 잔액/포인트 차감, 포인트 적립 등 처리
+            // [문제4: 결제 방식에 따라 유저 pay/point 차감 및 적립]
+            // 반드시 user의 PK id만 사용!
             if (payType == 1) {
-                uao.usePay(user.getId(), totalAmount);
+                uao.usePay(user.getId(), totalAmount); // 페이 차감
             } else if (payType == 2) {
-                uao.usePoint(user.getId(), totalAmount);
+                uao.usePoint(user.getId(), totalAmount); // 포인트 차감
             }
-            uao.addPoint(user.getId(), pointsEarned);
+            uao.addPoint(user.getId(), pointsEarned); // 포인트 적립
 
-            con.commit();
+            System.out.println("구매 성공!");
             return true;
         } catch (Exception e) {
-            if (con != null) try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
             e.printStackTrace();
+            System.out.println("구매 실패(에러): " + e.getMessage());
             return false;
         } finally {
-            if (con != null) try { con.setAutoCommit(true); con.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+            if (con != null) try { con.close(); } catch (SQLException ex) { ex.printStackTrace(); }
         }
     }
 
 
-    public boolean addToCart(int bookId) {
+
+
+
+    public boolean addToCart(int bookId, int user_id) {
         // 장바구니는 order_id == NULL로 표시
-        String sql = "INSERT INTO order_item (ORDER_ID, BOOK_ID, QUANTITY) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO order_item (ORDER_ID, BOOK_ID, QUANTITY, user_id) VALUES (?, ?, ?, ?);\r\n" + 
+        		"";
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setNull(1, java.sql.Types.INTEGER); // ORDER_ID는 NULL(장바구니 상태)
             ps.setInt(2, bookId);
             ps.setInt(3, 1); // ebook이면 1 고정
+            ps.setInt(4, user_id);
             return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();

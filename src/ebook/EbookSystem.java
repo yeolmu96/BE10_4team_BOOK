@@ -73,11 +73,10 @@ public class EbookSystem {
 			System.out.println("2. 도서 상세 보기");
 			System.out.println("3. 장바구니에 도서 담기");
 			System.out.println("4. 장바구니 결제");
-			System.out.println("5. 도서 즉시구매");
-			System.out.println("6. 구매 내역 확인 ");
-			System.out.println("7. 리뷰 작성");
-			System.out.println("8. FAQ");
-			System.out.println("9. 로그아웃");
+			System.out.println("5. 구매 내역 확인 ");
+			System.out.println("6. 리뷰 작성");
+			System.out.println("7. FAQ");
+			System.out.println("8. 로그아웃");
 			System.out.println("0. 프로그램 종료");
 			System.out.print("메뉴 선택: ");
 			/*
@@ -99,19 +98,16 @@ public class EbookSystem {
 			    case 4: // 장바구니 결제
 			        ui.purchaseCartMenu(user);
 			        break;
-			    case 5: // 도서  즉시 구매
-			        ui.purchaseBookMenu(user);
-			        break;
-			    case 6: // 구매 내역 확인
+			    case 5: // 구매 내역 확인
 			        ui.orderHistoryMenu(user);
 			        break;
-			    case 7: // 리뷰 작성
+			    case 6: // 리뷰 작성
 			        ui.writeReviewMenu(user);
 			        break;
-			    case 8: // FAQ 보기
+			    case 7: // FAQ 보기
 			        ui.faqMenu();
 			        break;
-			    case 9: // 로그아웃
+			    case 8: // 로그아웃
 			        System.out.println("로그아웃합니다.");
 			        return;
 			    case 0: // 프로그램 종료
