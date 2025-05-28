@@ -85,11 +85,11 @@ public class UserDTOImpl {
     }
 
     //4. 회원탈퇴 (id로 삭제)
-    public boolean delete(int id) {
+    public boolean delete(String userid) {
         String sql = "DELETE FROM user WHERE id=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+            ps.setString(1, userid);
             return ps.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();

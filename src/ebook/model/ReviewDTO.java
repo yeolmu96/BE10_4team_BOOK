@@ -1,6 +1,7 @@
 package ebook.model;
 
 public class ReviewDTO {
+
 	private String id; // 입력한 회원의 ID
 	private String title; // 리뷰하는 책 제목
 	private int grade; // 평점
@@ -45,8 +46,6 @@ public class ReviewDTO {
 	public void setTxt(String txt) {
 		this.txt = txt;
 	}
-	
-	
 	
 	
 }

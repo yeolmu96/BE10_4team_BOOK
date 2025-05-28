@@ -13,6 +13,7 @@ public class BookDTOImpl {
 
     // 1. 도서 등록 (INSERT)
     public boolean insert(BookDTO book) {
+    	//BookDTO book = new BookDTO(title, category, price, description, author);
         String sql = "INSERT INTO book(title, category, price, description, author) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
